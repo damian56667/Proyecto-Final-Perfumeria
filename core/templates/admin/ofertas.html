@@ -1,0 +1,194 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Gestión de Ofertas{% endblock %}
+{% load static %}
+{% load math_filters %}
+{% block content %}
+<div class="admin-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1><i class="fas fa-percent me-2"></i> Ofertas</h1>
+        <p class="mb-0 text-muted">Gestiona promociones y descuentos especiales</p>
+    </div>
+    <a href="{% url 'admin_oferta_agregar' %}" class="btn btn-gold">
+        <i class="fas fa-plus me-2"></i> Nueva Oferta
+    </a>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-percent fa-2x text-primary"></i>
+            <div class="stat-number">{{ ofertas|length }}</div>
+            <div class="stat-label">Total Ofertas</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-play-circle fa-2x text-success"></i>
+            <div class="stat-number">{{ ofertas_activas|length }}</div>
+            <div class="stat-label">Ofertas Activas</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-pause-circle fa-2x text-warning"></i>
+            <div class="stat-number">{{ ofertas_pendientes }}</div>
+            <div class="stat-label">Próximas</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-stop-circle fa-2x text-danger"></i>
+            <div class="stat-number">{{ ofertas_expiradas }}</div>
+            <div class="stat-label">Expiradas</div>
+        </div>
+    </div>
+</div>
+
+<!-- Ofertas Table -->
+<div class="card admin-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-list me-2"></i> Lista de Ofertas</h5>
+        <div class="d-flex">
+            <select class="form-select me-2" style="width: 180px;" id="filterStatus">
+                <option value="">Todas las ofertas</option>
+                <option value="active">Activas</option>
+                <option value="pending">Próximas</option>
+                <option value="expired">Expiradas</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-admin mb-0" id="ofertasTable">
+                <thead>
+                    <tr>
+                        <th width="80">ID</th>
+                        <th>Nombre</th>
+                        <th>Descuento</th>
+                        <th>Periodo</th>
+                        <th>Productos</th>
+                        <th>Estado</th>
+                        <th width="120">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for oferta in ofertas %}
+                    <tr class="oferta-row" data-status="{% if oferta.activo %}active{% elif oferta.fecha_inicio > hoy %}pending{% else %}expired{% endif %}">
+                        <td class="fw-bold text-muted">#{{ oferta.id }}</td>
+                        <td>
+                            <strong>{{ oferta.nombre }}</strong>
+                            {% if oferta.descripcion %}
+                            <br><small class="text-muted">{{ oferta.descripcion|truncatechars:50 }}</small>
+                            {% endif %}
+                        </td>
+
+                        <!-- DESCUENTO + PRECIOS -->
+                        <td>
+                            <!-- Porcentaje -->
+                            <span class="badge bg-danger fs-6">
+                                -{{ oferta.ofertas.first.descuento|mul:100|floatformat:0 }}%
+                            </span>
+
+                            <!-- Precio original -->
+                            <div class="text-muted text-decoration-line-through mt-1">
+                                ${{ oferta.productos.first.precio }}
+                            </div>
+
+                            <!-- Precio con descuento -->
+                            <div class="text-success fw-bold">
+                                ${{ oferta.productos.first.precio
+                                    |sub:oferta.productos.first.precio|mul:oferta.ofertas.first.descuento
+                                    |floatformat:2 }}
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="small">
+                                <div><strong>Inicio:</strong> {{ oferta.fecha_inicio|date:"d/m/Y" }}</div>
+                                <div><strong>Fin:</strong> {{ oferta.fecha_fin|date:"d/m/Y" }}</div>
+                                <div class="text-muted">
+                                    {% if oferta.activo %}
+                                    <i class="fas fa-clock me-1"></i> {{ oferta.dias_restantes }} días restantes
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">
+                                {{ oferta.productos.count }} productos
+                            </span>
+                        </td>
+                        <td>
+                            {% if oferta.activo %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-play-circle me-1"></i> Activa
+                            </span>
+                            {% elif oferta.fecha_inicio > hoy %}
+                            <span class="badge bg-warning">
+                                <i class="fas fa-clock me-1"></i> Próxima
+                            </span>
+                            {% else %}
+                            <span class="badge bg-secondary">
+                                <i class="fas fa-stop-circle me-1"></i> Expirada
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <a href="{% url 'admin_oferta_editar' oferta.id %}" class="btn-action btn-edit me-2" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin_oferta_eliminar' oferta.id %}" class="btn-action btn-delete" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <i class="fas fa-percent fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No hay ofertas registradas</h5>
+                            <p class="text-muted">Crea promociones para aumentar tus ventas</p>
+                            <a href="{% url 'admin_oferta_agregar' %}" class="btn btn-gold mt-2">
+                                <i class="fas fa-plus me-2"></i> Crear Oferta
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if ofertas %}
+    <div class="card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                Mostrando {{ ofertas|length }} ofertas
+            </div>
+            <div class="text-muted">
+                <i class="fas fa-info-circle me-1"></i> {{ ofertas_activas|length }} activas ahora
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+    document.getElementById('filterStatus').addEventListener('change', function() {
+        const status = this.value;
+        const rows = document.querySelectorAll('#ofertasTable .oferta-row');
+        
+        rows.forEach(row => {
+            if (!status || row.getAttribute('data-status') === status) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

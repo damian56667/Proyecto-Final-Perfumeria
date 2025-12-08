@@ -1,0 +1,182 @@
+<!-- core/templates/core/producto_detail.html -->
+{% extends "core/base.html" %}
+{% block title %}{{ producto.nombre }} - EsenciaNoble{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Imagen del producto -->
+        <div class="col-md-6">
+            <div class="card mb-4 border-0 shadow-sm">
+                {% if producto.imagen %}
+                <img src="{{ producto.imagen.url }}" 
+                     class="card-img-top" 
+                     alt="{{ producto.nombre }}"
+                     style="max-height: 500px; object-fit: contain;">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                     style="height: 400px;">
+                    <i class="fas fa-image fa-5x text-muted"></i>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Información del producto -->
+        <div class="col-md-6">
+            <div class="product-details">
+                <!-- Categoría y marca -->
+                <div class="mb-3">
+                    {% if producto.categoria %}
+                    <span class="badge bg-secondary me-2">{{ producto.categoria.nombre }}</span>
+                    {% endif %}
+                    {% if producto.marca %}
+                    <span class="badge bg-info">{{ producto.marca.nombre }}</span>
+                    {% endif %}
+                </div>
+                
+                <!-- Nombre del producto -->
+                <h1 class="product-title mb-3">{{ producto.nombre }}</h1>
+                
+                <!-- Precios -->
+                <div class="product-pricing mb-4">
+                    {% if ofertas_activas %}
+                        <!-- Si está en oferta -->
+                        {% with oferta=ofertas_activas.first %}
+                        <div class="mb-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <!-- Badge de oferta -->
+                                <span class="badge bg-danger me-3" style="font-size: 1.1rem;">
+                                    -{{ porcentaje_descuento|floatformat:0 }}% OFF
+                                </span>
+                                <small class="text-muted">Oferta activa hasta {{ oferta.fecha_fin|date:"d/m/Y" }}</small>
+                            </div>
+                            
+                            <!-- Precio original tachado -->
+                            <div class="mb-2">
+                                <span class="text-muted" style="text-decoration: line-through; font-size: 1.2rem;">
+                                    Precio original: ${{ producto.precio|floatformat:2 }}
+                                </span>
+                            </div>
+                            
+                            <!-- Precio con descuento -->
+                            <div class="mb-2">
+                                <h2 class="text-success fw-bold">
+                                    ${{ precio_con_descuento|floatformat:2 }}
+                                </h2>
+                                <small class="text-muted">Precio con {{ porcentaje_descuento|floatformat:0 }}% de descuento</small>
+                            </div>
+                            
+                            <!-- Ahorro -->
+                            <div class="alert alert-success py-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <i class="fas fa-piggy-bank me-2"></i>
+                                        <strong>Ahorras:</strong>
+                                    </div>
+                                    <div class="fs-5 fw-bold text-danger">
+                                        ${{ ahorro|floatformat:2 }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endwith %}
+                    {% else %}
+                        <!-- Precio normal (sin oferta) -->
+                        <div class="mb-3">
+                            <h2 class="fw-bold text-dark">
+                                ${{ producto.precio|floatformat:2 }}
+                            </h2>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Descripción -->
+                <div class="product-description mb-4">
+                    <h4 class="mb-3">Descripción</h4>
+                    <p class="text-muted">{{ producto.descripcion|linebreaks }}</p>
+                </div>
+                
+                <!-- Botones de acción -->
+                <div class="product-actions">
+                    {% if producto.stock > 0 %}
+                    <form method="post" action="{% url 'agregar_carrito' producto.id %}">
+                        {% csrf_token %}
+                        <div class="row g-3 align-items-center mb-3">
+                            <div class="col-auto">
+                                <label class="col-form-label">Cantidad:</label>
+                            </div>
+                            <div class="col-auto">
+                                <input type="number" name="cantidad" class="form-control" 
+                                       value="1" min="1" max="{{ producto.stock }}" style="width: 80px;">
+                            </div>
+                            <div class="col-auto">
+                                <small class="text-muted">Disponible: {{ producto.stock }}</small>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-shopping-cart me-2"></i>
+                                {% if ofertas_activas %}
+                                Agregar al Carrito con Descuento
+                                {% else %}
+                                Agregar al Carrito
+                                {% endif %}
+                            </button>
+                            
+                            {% if ofertas_activas %}
+                            <a href="{% url 'agregar_oferta_carrito' ofertas_activas.first.id %}" 
+                               class="btn btn-outline-primary">
+                                <i class="fas fa-tags me-2"></i>
+                                Comprar toda la oferta
+                            </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Este producto está agotado temporalmente.
+                    </div>
+                    <a href="{% url 'productos' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-store me-2"></i>
+                        Ver otros productos
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.product-title {
+    color: #1a237e;
+    font-weight: 700;
+}
+
+.product-pricing {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+}
+
+.product-description {
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+.card-img-top {
+    padding: 20px;
+    background: #f8f9fa;
+}
+
+.btn-lg {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+}
+</style>
+{% endblock %}

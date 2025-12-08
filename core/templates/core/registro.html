@@ -1,0 +1,334 @@
+{% extends "core/base.html" %}
+{% block title %}Registro - Perfumería{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <!-- Encabezado -->
+                <div class="card-header text-center bg-primary text-white py-4">
+                    <h3 class="mb-0">
+                        <i class="fas fa-user-plus me-2"></i>
+                        Únete a Nuestra Comunidad
+                    </h3>
+                    <p class="mt-2 mb-0" style="font-size: 0.9rem;">
+                        Descubre fragancias exclusivas para ti
+                    </p>
+                </div>
+                
+                <div class="card-body p-4 p-md-5">
+                    <div class="row">
+                        <!-- Columna izquierda: Beneficios -->
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <div class="text-center mb-4">
+                                <div class="mb-3" style="font-size: 3rem; color: #6f42c1;">
+                                    <i class="fas fa-spray-can-sparkles"></i>
+                                </div>
+                                <h4 class="text-dark">Beneficios de Registrarte</h4>
+                            </div>
+                            
+                            <ul class="list-unstyled">
+                                <li class="mb-3">
+                                    <div class="d-flex">
+                                        <div class="me-3" style="color: #6f42c1;">
+                                            <i class="fas fa-check-circle fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Ofertas exclusivas</h6>
+                                            <p class="small text-muted mb-0">Descuentos especiales solo para miembros</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="mb-3">
+                                    <div class="d-flex">
+                                        <div class="me-3" style="color: #6f42c1;">
+                                            <i class="fas fa-check-circle fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Historial de compras</h6>
+                                            <p class="small text-muted mb-0">Revisa y repite tus pedidos favoritos</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="mb-3">
+                                    <div class="d-flex">
+                                        <div class="me-3" style="color: #6f42c1;">
+                                            <i class="fas fa-check-circle fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Lista de deseos</h6>
+                                            <p class="small text-muted mb-0">Guarda tus fragancias favoritas</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="mb-3">
+                                    <div class="d-flex">
+                                        <div class="me-3" style="color: #6f42c1;">
+                                            <i class="fas fa-check-circle fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Seguimiento de envíos</h6>
+                                            <p class="small text-muted mb-0">Controla el estado de tus pedidos</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="d-flex">
+                                        <div class="me-3" style="color: #6f42c1;">
+                                            <i class="fas fa-check-circle fa-lg"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Soporte prioritario</h6>
+                                            <p class="small text-muted mb-0">Atención personalizada 24/7</p>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <!-- Columna derecha: Formulario -->
+                        <div class="col-md-6">
+                            <h4 class="text-center mb-4">Crear Cuenta</h4>
+                            
+                            <!-- Mensajes de error -->
+                            {% if form.errors %}
+                            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                Por favor, corrige los siguientes errores:
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- En la sección del formulario (líneas ~80-130): -->
+<form method="post" novalidate>
+    {% csrf_token %}
+    
+    <!-- Username -->
+    <div class="mb-3">
+        <label for="id_username" class="form-label fw-bold">
+            <i class="fas fa-user me-2"></i>Nombre de usuario
+        </label>
+        {{ form.username }}
+        {% if form.username.errors %}
+        <div class="invalid-feedback d-block">
+            {{ form.username.errors.0 }}
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Email -->
+    <div class="mb-3">
+        <label for="id_email" class="form-label fw-bold">
+            <i class="fas fa-envelope me-2"></i>Correo electrónico
+        </label>
+        {{ form.email }}
+        {% if form.email.errors %}
+        <div class="invalid-feedback d-block">
+            {{ form.email.errors.0 }}
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Solo si usas la Opción 1 (con perfil): -->
+    {% if form.telefono %}
+    <div class="mb-3">
+        <label for="id_telefono" class="form-label fw-bold">
+            <i class="fas fa-phone me-2"></i>Teléfono
+        </label>
+        {{ form.telefono }}
+        {% if form.telefono.errors %}
+        <div class="invalid-feedback d-block">
+            {{ form.telefono.errors.0 }}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% if form.direccion %}
+    <div class="mb-3">
+        <label for="id_direccion" class="form-label fw-bold">
+            <i class="fas fa-map-marker-alt me-2"></i>Dirección
+        </label>
+        {{ form.direccion }}
+        {% if form.direccion.errors %}
+        <div class="invalid-feedback d-block">
+            {{ form.direccion.errors.0 }}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    {% if form.ciudad %}
+    <div class="mb-3">
+        <label for="id_ciudad" class="form-label fw-bold">
+            <i class="fas fa-city me-2"></i>Ciudad
+        </label>
+        {{ form.ciudad }}
+        {% if form.ciudad.errors %}
+        <div class="invalid-feedback d-block">
+            {{ form.ciudad.errors.0 }}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Password1 -->
+    <div class="mb-3">
+        <label for="id_password1" class="form-label fw-bold">
+            <i class="fas fa-lock me-2"></i>Contraseña
+        </label>
+        <div class="input-group">
+            {{ form.password1 }}
+            <button class="btn btn-outline-secondary" type="button" id="togglePassword1">
+                <i class="fas fa-eye"></i>
+            </button>
+        </div>
+        {% if form.password1.errors %}
+        <div class="invalid-feedback d-block">
+            {{ form.password1.errors.0 }}
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Password2 -->
+    <div class="mb-4">
+        <label for="id_password2" class="form-label fw-bold">
+            <i class="fas fa-lock me-2"></i>Confirmar contraseña
+        </label>
+        <div class="input-group">
+            {{ form.password2 }}
+            <button class="btn btn-outline-secondary" type="button" id="togglePassword2">
+                <i class="fas fa-eye"></i>
+            </button>
+        </div>
+        {% if form.password2.errors %}
+        <div class="invalid-feedback d-block">
+            {{ form.password2.errors.0 }}
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Términos y condiciones -->
+    {% if form.terms %}
+    <div class="form-check mb-4">
+        {{ form.terms }}
+        <label class="form-check-label text-muted" for="id_terms">
+            Acepto los 
+            <a href="#" class="text-decoration-none">términos y condiciones</a> 
+            y la 
+            <a href="#" class="text-decoration-none">política de privacidad</a>
+        </label>
+        {% if form.terms.errors %}
+        <div class="invalid-feedback d-block">
+            {{ form.terms.errors.0 }}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Botón de registro -->
+    <div class="d-grid mb-3">
+        <button type="submit" class="btn btn-primary btn-lg">
+            <i class="fas fa-user-plus me-2"></i>
+            Crear Cuenta
+        </button>
+    </div>
+</form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle para password1
+    const togglePassword1 = document.getElementById('togglePassword1');
+    const passwordInput1 = document.getElementById('id_password1');
+    
+    togglePassword1.addEventListener('click', function() {
+        const type = passwordInput1.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput1.setAttribute('type', type);
+        this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+    });
+    
+    // Toggle para password2
+    const togglePassword2 = document.getElementById('togglePassword2');
+    const passwordInput2 = document.getElementById('id_password2');
+    
+    togglePassword2.addEventListener('click', function() {
+        const type = passwordInput2.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput2.setAttribute('type', type);
+        this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+    });
+});
+</script>
+
+<!-- Estilos -->
+<style>
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.card-header {
+    background: linear-gradient(135deg, #6f42c1 0%, #8844ff 100%);
+    border-bottom: 0;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #6f42c1 0%, #8844ff 100%);
+    border: none;
+    padding: 12px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a32a3 0%, #7333e0 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(111, 66, 193, 0.3);
+}
+
+.form-control {
+    border-radius: 10px;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    transition: all 0.3s;
+}
+
+.form-control:focus {
+    border-color: #6f42c1;
+    box-shadow: 0 0 0 0.25rem rgba(111, 66, 193, 0.25);
+}
+
+.form-check-input:checked {
+    background-color: #6f42c1;
+    border-color: #6f42c1;
+}
+
+.list-unstyled li {
+    padding: 10px;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.list-unstyled li:hover {
+    background-color: #f8f9fa;
+}
+
+a {
+    color: #6f42c1;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: #5a32a3;
+}
+</style>
+{% endblock %}

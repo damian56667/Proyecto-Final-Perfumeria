@@ -1,0 +1,207 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Perfumes - Esencia Noble{% endblock %}
+
+{% block extra_css %}
+<style>
+    .filter-sidebar {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        height: fit-content;
+    }
+    
+    .filter-title {
+        font-weight: 600;
+        color: var(--negro);
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--dorado);
+    }
+    
+    .filter-group {
+        margin-bottom: 25px;
+    }
+    
+    .filter-btn {
+        background: var(--gris);
+        border: none;
+        padding: 8px 15px;
+        border-radius: 8px;
+        margin: 5px;
+        transition: all 0.3s;
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+        background: var(--dorado);
+        color: var(--negro);
+    }
+    
+    .product-count {
+        color: var(--dorado);
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .sort-select {
+        border: 2px solid var(--dorado);
+        border-radius: 8px;
+        padding: 8px 15px;
+        background: white;
+        color: var(--negro);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Filtros -->
+        <div class="col-lg-3 mb-4">
+            <div class="filter-sidebar">
+                <h4 class="filter-title">Filtros</h4>
+                
+                <!-- Categorías -->
+                <div class="filter-group">
+                    <h6 class="fw-bold mb-3">Categorías</h6>
+                    {% for categoria in categorias %}
+                    <a href="{% url 'perfumes' %}?categoria={{ categoria.id }}" 
+                       class="btn filter-btn {% if request.GET.categoria == categoria.id|stringformat:'i' %}active{% endif %}">
+                        {{ categoria.nombre }}
+                    </a>
+                    {% endfor %}
+                </div>
+                
+                <!-- Marcas -->
+                <div class="filter-group">
+                    <h6 class="fw-bold mb-3">Marcas</h6>
+                    {% for marca in marcas %}
+                    <a href="{% url 'perfumes' %}?marca={{ marca.id }}" 
+                       class="btn filter-btn {% if request.GET.marca == marca.id|stringformat:'i' %}active{% endif %}">
+                        {{ marca.nombre }}
+                    </a>
+                    {% endfor %}
+                </div>
+                
+                <!-- Precio -->
+                <div class="filter-group">
+                    <h6 class="fw-bold mb-3">Precio</h6>
+                    <a href="{% url 'perfumes' %}?precio=menor-500" class="btn filter-btn">Menos de $500</a>
+                    <a href="{% url 'perfumes' %}?precio=500-1000" class="btn filter-btn">$500 - $1000</a>
+                    <a href="{% url 'perfumes' %}?precio=mayor-1000" class="btn filter-btn">Más de $1000</a>
+                </div>
+                
+                <!-- Stock -->
+                <div class="filter-group">
+                    <h6 class="fw-bold mb-3">Disponibilidad</h6>
+                    <a href="{% url 'perfumes' %}?stock=disponible" class="btn filter-btn">En Stock</a>
+                    <a href="{% url 'perfumes' %}?stock=agotado" class="btn filter-btn">Agotados</a>
+                </div>
+                
+                <!-- Limpiar Filtros -->
+                <a href="{% url 'perfumes' %}" class="btn btn-outline-gold w-100 mt-3">
+                    <i class="fas fa-times me-2"></i> Limpiar Filtros
+                </a>
+            </div>
+        </div>
+        
+        <!-- Productos -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="section-title mb-0">Nuestros Perfumes</h1>
+                    <p class="text-muted mb-0">
+                        <span class="product-count">{{ productos|length }}</span> productos encontrados
+                    </p>
+                </div>
+                
+                <div>
+                    <select class="sort-select" onchange="location = this.value;">
+                        <option value="?orden=reciente">Más Recientes</option>
+                        <option value="?orden=precio-asc">Precio: Menor a Mayor</option>
+                        <option value="?orden=precio-desc">Precio: Mayor a Menor</option>
+                        <option value="?orden=nombre-asc">Nombre: A-Z</option>
+                    </select>
+                </div>
+            </div>
+            
+            {% if productos %}
+            <div class="row">
+                {% for producto in productos %}
+                <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <!-- Dentro del loop de productos en perfumes.html -->
+<div class="product-card-home position-relative">
+    {% if producto.tiene_oferta_activa %}
+    <div class="product-badge">
+        -{{ producto.oferta_activa.descuento|floatformat:0 }}%
+    </div>
+    {% endif %}
+    
+    <div class="overflow-hidden" style="height: 200px;">
+        {% if producto.imagen %}
+        <img src="{{ producto.imagen.url }}" class="product-img-home" alt="{{ producto.nombre }}">
+        {% else %}
+        <div class="product-img-home bg-light d-flex align-items-center justify-content-center">
+            <i class="fas fa-wine-bottle fa-3x text-muted"></i>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="p-3">
+        <h6 class="mb-2">{{ producto.nombre }}</h6>
+        <p class="text-muted small mb-2">{{ producto.marca.nombre }}</p>
+        
+        <div class="mb-2">
+            {% if producto.tiene_oferta_activa %}
+                {% with precio_descuento=producto.precio_con_descuento %}
+                    <div class="d-flex align-items-center">
+                        <span class="text-decoration-line-through text-muted me-2 small">
+                            ${{ producto.precio|floatformat:2 }}
+                        </span>
+                        <span class="h6 text-dark mb-0">${{ precio_descuento|floatformat:2 }}</span>
+                    </div>
+                {% endwith %}
+            {% else %}
+                <span class="h6 text-dark mb-0">${{ producto.precio|floatformat:2 }}</span>
+            {% endif %}
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-center">
+            <span class="badge {% if producto.stock > 10 %}bg-success{% elif producto.stock > 0 %}bg-warning{% else %}bg-danger{% endif %}">
+                {{ producto.stock }} unidades
+            </span>
+            <div class="d-flex gap-2">
+                <a href="{% url 'producto_detail' producto.id %}" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-eye"></i>
+                </a>
+                {% if producto.stock > 0 %}
+                <a href="{% url 'agregar_carrito' producto.id %}" class="btn btn-sm btn-gold">
+                    <i class="fas fa-cart-plus"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Paginación -->
+            
+            {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">No se encontraron productos</h4>
+                <p class="text-muted mb-4">Intenta con otros filtros o categorías</p>
+                <a href="{% url 'perfumes' %}" class="btn btn-gold">
+                    <i class="fas fa-undo me-2"></i> Ver Todos los Productos
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,168 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Gestión de Marcas{% endblock %}
+
+{% block content %}
+<div class="admin-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1><i class="fas fa-crown me-2"></i> Marcas</h1>
+        <p class="mb-0 text-muted">Gestiona las casas perfumeras de la tienda</p>
+    </div>
+    <a href="{% url 'admin_marca_agregar' %}" class="btn btn-gold">
+        <i class="fas fa-plus me-2"></i> Nueva Marca
+    </a>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-crown fa-2x text-primary"></i>
+            <div class="stat-number">{{ marcas|length }}</div>
+            <div class="stat-label">Total Marcas</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-boxes fa-2x text-success"></i>
+            <div class="stat-number">{{ productos_por_marca }}</div>
+            <div class="stat-label">Productos Activos</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-globe-americas fa-2x text-warning"></i>
+            <div class="stat-number">{{ paises_count }}</div>
+            <div class="stat-label">Países</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-star fa-2x text-info"></i>
+            <div class="stat-number">{{ marcas_con_imagen }}</div>
+            <div class="stat-label">Con Logo</div>
+        </div>
+    </div>
+</div>
+
+<!-- Marcas Table -->
+<div class="card admin-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-list me-2"></i> Lista de Marcas</h5>
+        <div class="d-flex">
+            <input type="text" class="form-control me-2" placeholder="Buscar marca..." style="width: 250px;" id="searchInput">
+            <button class="btn btn-outline-secondary" onclick="filterTable()">
+                <i class="fas fa-filter"></i>
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-admin mb-0" id="marcasTable">
+                <thead>
+                    <tr>
+                        <th width="80">Logo</th>
+                        <th>Nombre</th>
+                        <th>País de Origen</th>
+                        <th>Productos</th>
+                        <th>Descripción</th>
+                        <th width="120">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for marca in marcas %}
+                    <tr>
+                        <td>
+                            {% if marca.imagen %}
+                            <img src="{{ marca.imagen.url }}" alt="{{ marca.nombre }}" class="product-img-admin">
+                            {% else %}
+                            <div class="product-img-admin bg-light d-flex align-items-center justify-content-center">
+                                <i class="fas fa-crown text-muted"></i>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ marca.nombre }}</strong>
+                        </td>
+                        <td>
+                            {% if marca.pais_origen %}
+                            <span class="badge bg-light text-dark">
+                                <i class="fas fa-globe-americas me-1"></i> {{ marca.pais_origen }}
+                            </span>
+                            {% else %}
+                            <span class="text-muted">No especificado</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge {% if marca.productos.count > 0 %}bg-success{% else %}bg-secondary{% endif %}">
+                                {{ marca.productos.count }} productos
+                            </span>
+                        </td>
+                        <td>
+                            {% if marca.descripcion %}
+                            <small class="text-muted" title="{{ marca.descripcion }}">
+                                {{ marca.descripcion|truncatechars:60 }}
+                            </small>
+                            {% else %}
+                            <span class="text-muted">Sin descripción</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <a href="{% url 'admin_marca_editar' marca.id %}" class="btn-action btn-edit me-2" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin_marca_eliminar' marca.id %}" class="btn-action btn-delete" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center py-5">
+                            <i class="fas fa-crown fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No hay marcas registradas</h5>
+                            <p class="text-muted">Comienza agregando tu primera marca</p>
+                            <a href="{% url 'admin_marca_agregar' %}" class="btn btn-gold mt-2">
+                                <i class="fas fa-plus me-2"></i> Agregar Marca
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if marcas %}
+    <div class="card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                Mostrando {{ marcas|length }} marcas
+            </div>
+            <div class="text-muted">
+                <i class="fas fa-info-circle me-1"></i> Total productos: {{ total_productos }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+    function filterTable() {
+        const input = document.getElementById('searchInput');
+        const filter = input.value.toLowerCase();
+        const table = document.getElementById('marcasTable');
+        const rows = table.getElementsByTagName('tr');
+        
+        for (let i = 1; i < rows.length; i++) {
+            const row = rows[i];
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        }
+    }
+    
+    document.getElementById('searchInput').addEventListener('keyup', filterTable);
+</script>
+{% endblock %}
+{% endblock %}

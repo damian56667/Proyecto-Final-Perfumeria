@@ -1,0 +1,188 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Gestión de Productos{% endblock %}
+
+{% block content %}
+<div class="admin-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1><i class="fas fa-box me-2"></i> Productos</h1>
+        <p class="mb-0 text-muted">Gestiona todos los productos de la perfumería</p>
+    </div>
+    <a href="{% url 'admin_producto_agregar' %}" class="btn btn-gold">
+        <i class="fas fa-plus me-2"></i> Nuevo Producto
+    </a>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-boxes fa-2x text-primary"></i>
+            <div class="stat-number">{{ productos|length }}</div>
+            <div class="stat-label">Total Productos</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-check-circle fa-2x text-success"></i>
+            <div class="stat-number">{{ productos_con_stock }}</div>
+            <div class="stat-label">Con Stock</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-tags fa-2x text-warning"></i>
+            <div class="stat-number">{{ marcas_count }}</div>
+            <div class="stat-label">Marcas</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-list fa-2x text-info"></i>
+            <div class="stat-number">{{ categorias_count }}</div>
+            <div class="stat-label">Categorías</div>
+        </div>
+    </div>
+</div>
+
+<!-- Products Table -->
+<div class="card admin-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-list me-2"></i> Lista de Productos</h5>
+        <div class="d-flex">
+            <input type="text" class="form-control me-2" placeholder="Buscar producto..." style="width: 250px;">
+            <button class="btn btn-outline-secondary">
+                <i class="fas fa-filter"></i>
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-admin mb-0">
+                <thead>
+                    <tr>
+                        <th width="60">ID</th>
+                        <th width="80">Imagen</th>
+                        <th>Nombre</th>
+                        <th>Marca</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th width="120">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos %}
+                    <tr>
+                        <td class="fw-bold text-muted">#{{ producto.id }}</td>
+                        <td>
+                            {% if producto.imagen %}
+                            <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" class="product-img-admin">
+                            {% else %}
+                            <div class="product-img-admin bg-light d-flex align-items-center justify-content-center">
+                                <i class="fas fa-image text-muted"></i>
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong>{{ producto.nombre }}</strong>
+                            {% if producto.sku %}
+                            <br><small class="text-muted">SKU: {{ producto.sku }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark">
+                                <i class="fas fa-tag me-1"></i> {{ producto.marca.nombre }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if producto.categoria %}
+                            <span class="badge bg-light text-dark">
+                                {{ producto.categoria.nombre }}
+                            </span>
+                            {% else %}
+                            <span class="text-muted">Sin categoría</span>
+                            {% endif %}
+                        </td>
+                        <td class="fw-bold text-primary">${{ producto.precio }}</td>
+                        <td>
+                            {% if producto.stock > 10 %}
+                            <span class="badge badge-admin badge-stock">
+                                <i class="fas fa-check me-1"></i> {{ producto.stock }}
+                            </span>
+                            {% elif producto.stock > 0 %}
+                            <span class="badge badge-admin badge-stock-low">
+                                <i class="fas fa-exclamation-triangle me-1"></i> {{ producto.stock }}
+                            </span>
+                            {% else %}
+                            <span class="badge badge-admin badge-stock-out">
+                                <i class="fas fa-times me-1"></i> Agotado
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <a href="{% url 'admin_producto_editar' producto.id %}" class="btn-action btn-edit me-2" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'admin_producto_eliminar' producto.id %}" class="btn-action btn-delete" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center py-5">
+                            <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No hay productos registrados</h5>
+                            <p class="text-muted">Comienza agregando tu primer producto</p>
+                            <a href="{% url 'admin_producto_agregar' %}" class="btn btn-gold mt-2">
+                                <i class="fas fa-plus me-2"></i> Agregar Producto
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if productos %}
+    <div class="card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                Mostrando {{ productos|length }} productos
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item disabled"><a class="page-link" href="#">Anterior</a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Siguiente</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Simple search functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.querySelector('input[type="text"]');
+        if (searchInput) {
+            searchInput.addEventListener('keyup', function() {
+                const searchTerm = this.value.toLowerCase();
+                const rows = document.querySelectorAll('tbody tr');
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchTerm) ? '' : 'none';
+                });
+            });
+        }
+    });
+</script>
+{% endblock %}

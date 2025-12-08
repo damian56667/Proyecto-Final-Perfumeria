@@ -1,0 +1,10 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Eliminar Categoría{% endblock %}
+{% block content %}
+<h2>Eliminar Categoría</h2>
+<p>¿Seguro que quieres eliminar "{{ categoria.nombre }}"?</p>
+<form method="post">{% csrf_token %}
+  <button class="btn-danger" type="submit">Sí, eliminar</button>
+  <a href="{% url 'admin_categorias' %}">Cancelar</a>
+</form>
+{% endblock %}

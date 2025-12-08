@@ -1,0 +1,10 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Eliminar Marca{% endblock %}
+{% block content %}
+<h2>Eliminar Marca</h2>
+<p>¿Seguro que quieres eliminar "{{ marca.nombre }}"?</p>
+<form method="post">{% csrf_token %}
+  <button class="btn-danger" type="submit">Sí, eliminar</button>
+  <a href="{% url 'admin_marcas' %}">Cancelar</a>
+</form>
+{% endblock %}

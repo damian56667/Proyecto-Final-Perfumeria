@@ -1,0 +1,191 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Gestión de Usuarios{% endblock %}
+
+{% block content %}
+<div class="admin-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1><i class="fas fa-users me-2"></i> Usuarios</h1>
+        <p class="mb-0 text-muted">Administra los usuarios registrados en la plataforma</p>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="stat-card">
+            <i class="fas fa-users fa-2x text-primary"></i>
+            <div class="stat-number">{{ usuarios_count }}</div>
+            <div class="stat-label">Total Usuarios</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <i class="fas fa-user-shield fa-2x text-success"></i>
+            <div class="stat-number">{{ staff_count }}</div>
+            <div class="stat-label">Administradores</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card">
+            <i class="fas fa-shopping-cart fa-2x text-warning"></i>
+            <div class="stat-number">{{ usuarios_con_pedidos }}</div>
+            <div class="stat-label">Con Compras</div>
+        </div>
+    </div>
+</div>
+
+<!-- Usuarios Table -->
+<div class="card admin-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-list me-2"></i> Lista de Usuarios</h5>
+        <div class="d-flex">
+            <input type="text" class="form-control me-2" placeholder="Buscar usuario..." style="width: 250px;" id="searchInput">
+            <select class="form-select" style="width: 180px;" id="filterRole">
+                <option value="">Todos los usuarios</option>
+                <option value="staff">Solo administradores</option>
+                <option value="clients">Solo clientes</option>
+            </select>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-admin mb-0" id="usuariosTable">
+                <thead>
+                    <tr>
+                        <th width="80">ID</th>
+                        <th>Usuario</th>
+                        <th>Información</th>
+                        <th>Estado</th>
+                        <th>Pedidos</th>
+                        <th>Registro</th>
+                        <th width="100">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for usuario in usuarios %}
+                    <tr class="usuario-row" data-role="{% if usuario.is_staff %}staff{% else %}client{% endif %}">
+                        <td class="fw-bold text-muted">#{{ usuario.id }}</td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <div class="avatar-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; border-radius: 50%;">
+                                        {{ usuario.username|first|upper }}
+                                    </div>
+                                </div>
+                                <div>
+                                    <strong>{{ usuario.username }}</strong>
+                                    <br><small class="text-muted">{{ usuario.email }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="small">
+                                {% if usuario.first_name or usuario.last_name %}
+                                <div><strong>Nombre:</strong> {{ usuario.first_name }} {{ usuario.last_name }}</div>
+                                {% endif %}
+                                {% if usuario.telefono %}
+                                <div><strong>Teléfono:</strong> {{ usuario.telefono }}</div>
+                                {% endif %}
+                                {% if usuario.ciudad %}
+                                <div><strong>Ciudad:</strong> {{ usuario.ciudad }}</div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% if usuario.is_staff %}
+                            <span class="badge bg-danger">
+                                <i class="fas fa-user-shield me-1"></i> Admin
+                            </span>
+                            {% else %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-user me-1"></i> Cliente
+                            </span>
+                            {% endif %}
+                            <br>
+                            <small class="text-muted">
+                                {% if usuario.is_active %}
+                                <i class="fas fa-check-circle text-success"></i> Activo
+                                {% else %}
+                                <i class="fas fa-times-circle text-danger"></i> Inactivo
+                                {% endif %}
+                            </small>
+                        </td>
+                        <td>
+                            {% with pedidos_count=usuario.pedidos.count %}
+                            <span class="badge {% if pedidos_count > 0 %}bg-info{% else %}bg-secondary{% endif %}">
+                                {{ pedidos_count }} pedidos
+                            </span>
+                            {% if pedidos_count > 0 %}
+                            <br><small class="text-muted">Último: {{ usuario.pedidos.last.fecha|date:"d/m/Y" }}</small>
+                            {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>
+                            <small class="text-muted">
+                                {{ usuario.date_joined|date:"d/m/Y" }}
+                                <br>{{ usuario.date_joined|timesince }}
+                            </small>
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                {% if not usuario.is_staff %}
+                                <a href="{% url 'admin_usuario_eliminar' usuario.id %}" class="btn-action btn-delete" title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                                {% else %}
+                                <span class="text-muted small">No editable</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No hay usuarios registrados</h5>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if usuarios %}
+    <div class="card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                Mostrando {{ usuarios|length }} usuarios
+            </div>
+            <div class="text-muted">
+                <i class="fas fa-info-circle me-1"></i> {{ staff_count }} administradores
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const filterRole = document.getElementById('filterRole');
+    
+    function filterTable() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const roleFilter = filterRole.value;
+        
+        document.querySelectorAll('#usuariosTable .usuario-row').forEach(row => {
+            const text = row.textContent.toLowerCase();
+            const role = row.getAttribute('data-role');
+            
+            const matchesSearch = text.includes(searchTerm);
+            const matchesRole = !roleFilter || role === roleFilter;
+            
+            row.style.display = matchesSearch && matchesRole ? '' : 'none';
+        });
+    }
+    
+    searchInput.addEventListener('keyup', filterTable);
+    filterRole.addEventListener('change', filterTable);
+</script>
+{% endblock %}
+{% endblock %}

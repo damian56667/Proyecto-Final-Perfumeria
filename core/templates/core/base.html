@@ -1,0 +1,385 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Esencia Noble - Fragancias de Lujo{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tu CSS Personalizado -->
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+    
+    <style>
+        /* Variables adicionales */
+        :root {
+            --dorado: #B8860B;
+            --negro: #1C1C1C;
+            --blanco: #F5F5F5;
+            --rosa: #F2D7D5;
+            --gris: #e9e9e9;
+            --text-muted: #666;
+            --dorado-claro: #d4af37;
+            --dorado-oscuro: #8b6914;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--blanco);
+            color: var(--negro);
+        }
+        
+        /* Navbar Mejorada */
+        .navbar-custom {
+            background-color: var(--blanco) !important;
+            border-bottom: 3px solid var(--dorado);
+            box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            padding: 15px 0;
+        }
+        
+        .navbar-brand-custom {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--negro) !important;
+        }
+        
+        .navbar-brand-custom span {
+            color: var(--dorado);
+        }
+        
+        .nav-link-custom {
+            color: var(--negro) !important;
+            font-weight: 500;
+            margin: 0 5px;
+            padding: 8px 15px !important;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link-custom:hover {
+            color: var(--dorado) !important;
+            background-color: rgba(184, 134, 11, 0.1);
+        }
+        
+        .nav-link-custom.active {
+            color: var(--dorado) !important;
+            font-weight: 600;
+            background-color: rgba(184, 134, 11, 0.1);
+        }
+        
+        /* Botones Mejorados */
+        .btn-gold {
+            background-color: var(--dorado);
+            color: var(--negro);
+            border: none;
+            font-weight: 600;
+            padding: 10px 25px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-gold:hover {
+            background-color: var(--dorado-oscuro);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(184, 134, 11, 0.3);
+        }
+        
+        .btn-outline-gold {
+            border: 2px solid var(--dorado);
+            color: var(--dorado);
+            background: transparent;
+            font-weight: 600;
+            padding: 10px 25px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-outline-gold:hover {
+            background-color: var(--dorado);
+            color: var(--negro);
+            transform: translateY(-2px);
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            background: linear-gradient(rgba(28, 28, 28, 0.85), rgba(28, 28, 28, 0.9)),
+                        url('{% static "img/hero-bg.jpg" %}') center/cover no-repeat;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            margin-bottom: 50px;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: var(--blanco);
+        }
+        
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Cards Mejoradas */
+        .product-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid var(--gris);
+            height: 100%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: var(--dorado);
+        }
+        
+        .product-img {
+            height: 250px;
+            width: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .product-card:hover .product-img {
+            transform: scale(1.05);
+        }
+        
+        .badge-gold {
+            background-color: var(--dorado);
+            color: var(--negro);
+        }
+        
+        .badge-outline-gold {
+            border: 1px solid var(--dorado);
+            color: var(--dorado);
+            background: transparent;
+        }
+        
+        /* Section Titles */
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--negro);
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+            padding-bottom: 10px;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--dorado);
+        }
+        
+        /* Footer */
+        .footer-custom {
+            background-color: var(--negro);
+            color: var(--blanco);
+            padding: 40px 0 20px;
+            margin-top: 60px;
+        }
+        
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            color: var(--dorado);
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.2rem;
+            }
+            
+            .section-title {
+                font-size: 1.6rem;
+            }
+            
+            .product-img {
+                height: 200px;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand navbar-brand-custom" href="{% url 'inicio' %}">
+                <i class="fas fa-crown me-2"></i>Esencia<span>Noble</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if request.path == '/' %}active{% endif %}" href="{% url 'inicio' %}">
+                            <i class="fas fa-home me-1"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if 'perfumes' in request.path %}active{% endif %}" href="{% url 'perfumes' %}">
+                            <i class="fas fa-wine-bottle me-1"></i> Perfumes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if 'marcas' in request.path %}active{% endif %}" href="{% url 'marcas' %}">
+                            <i class="fas fa-crown me-1"></i> Marcas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if 'ofertas' in request.path %}active{% endif %}" href="{% url 'ofertas' %}">
+                            <i class="fas fa-percent me-1"></i> Ofertas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-link-custom {% if 'contacto' in request.path %}active{% endif %}" href="{% url 'contacto' %}">
+                            <i class="fas fa-phone me-1"></i> Contacto
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Carrito -->
+                    <a href="{% url 'carrito' %}" class="btn btn-outline-gold btn-sm position-relative">
+                        <i class="fas fa-shopping-cart"></i>
+                        {% if user.is_authenticated %}
+                            {% with carrito=user.carritos.first %}
+                                {% if carrito and carrito.items.count > 0 %}
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    {{ carrito.items.count }}
+                                </span>
+                                {% endif %}
+                            {% endwith %}
+                        {% endif %}
+                    </a>
+                    
+                    <!-- Usuario -->
+                    {% if user.is_authenticated %}
+                    <div class="dropdown">
+                        <button class="btn btn-outline-gold btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user me-1"></i> {{ user.username }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="{% url 'carrito' %}"><i class="fas fa-shopping-cart me-2"></i> Mi Carrito</a></li>
+                            {% if user.is_staff %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-warning" href="{% url 'admin_productos' %}"><i class="fas fa-cog me-2"></i> Panel Admin</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'login' %}" class="btn btn-outline-gold btn-sm">Iniciar Sesión</a>
+                        <a href="{% url 'registro' %}" class="btn btn-gold btn-sm">Registrarse</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mensajes -->
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Contenido Principal -->
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-4 bg-dark text-white">
+    <div class="container">
+        <div class="row">
+            <!-- Logo del negocio -->
+            <div class="col-md-4">
+                <h4 class="mb-3">
+                    <i class="fas fa-perfume-bottle me-2"></i>
+                    Perfumería Elegante
+                </h4>
+                <p class="small">Los mejores perfumes importados</p>
+            </div>
+            
+            <!-- Datos del alumno -->
+            <div class="col-md-4">
+                <h6>Datos del Alumno:</h6>
+                <ul class="list-unstyled small">
+                    <li><strong>Nombre:</strong> Dominguez Ayala Damian Alberto</li>
+                    <li><strong>Matrícula:</strong> 0566</li>
+                    <li><strong>Grupo:</strong> 5-I</li>
+                </ul>
+            </div>
+            
+            <!-- Datos del submódulo -->
+            <div class="col-md-4">
+                <h6>Información Académica:</h6>
+                <ul class="list-unstyled small">
+                    <li><strong>Submódulo:</strong> Desarrollo de Aplicaciones Web</li>
+                    <li><strong>Institución:</strong> Cbtis#128</li>
+                </ul>
+            </div>
+        </div>
+        
+        <hr class="bg-light">
+        
+        <div class="text-center small">
+            <p class="mb-0">
+                © 2024 Perfumería Elegante - Proyecto educativo desarrollado para evaluación académica
+            </p>
+        </div>
+    </div>
+</footer>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Tu JavaScript Personalizado -->
+    <script src="{% static 'js/main.js' %}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

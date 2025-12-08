@@ -1,0 +1,1093 @@
+{% extends "core/base.html" %}
+{% block title %}Checkout Final - Perfumería{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="checkout-container">
+    <!-- Progress Steps -->
+    <div class="progress-steps">
+        <div class="step completed">
+            <div class="step-icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <span class="step-label">Carrito</span>
+        </div>
+        <div class="step-line completed"></div>
+        
+        <div class="step active">
+            <div class="step-icon">
+                <i class="fas fa-credit-card"></i>
+            </div>
+            <span class="step-label">Pago</span>
+        </div>
+        <div class="step-line"></div>
+        
+        <div class="step">
+            <div class="step-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <span class="step-label">Confirmación</span>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left Column - Form -->
+        <div class="col-lg-8">
+            <div class="checkout-card glass-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-user-circle me-3"></i>Información del Cliente</h2>
+                </div>
+                
+                <form method="post" id="checkoutForm" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- Personal Info -->
+                    <div class="section">
+                        <h4 class="section-title">
+                            <span class="icon-wrapper">
+                                <i class="fas fa-user"></i>
+                            </span>
+                            Datos Personales
+                        </h4>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="nombre" 
+                                           name="nombre_completo" 
+                                           value="{{ user.get_full_name|default:user.username }}"
+                                           placeholder="Nombre completo" required>
+                                    <label for="nombre">
+                                        <i class="fas fa-user me-2"></i>Nombre completo *
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa tu nombre completo.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="email" class="form-control" id="email" 
+                                           name="email" value="{{ user.email }}"
+                                           placeholder="correo@ejemplo.com" required>
+                                    <label for="email">
+                                        <i class="fas fa-envelope me-2"></i>Email *
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        Por favor ingresa un email válido.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="tel" class="form-control" id="telefono" 
+                                           name="telefono" placeholder="Teléfono" required
+                                           pattern="[0-9]{10}">
+                                    <label for="telefono">
+                                        <i class="fas fa-phone me-2"></i>Teléfono *
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        10 dígitos requeridos.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Shipping Address -->
+                    <div class="section">
+                        <h4 class="section-title">
+                            <span class="icon-wrapper">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </span>
+                            Dirección de Envío
+                        </h4>
+                        
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="calle" 
+                                           name="calle" placeholder="Calle y número" required>
+                                    <label for="calle">
+                                        <i class="fas fa-road me-2"></i>Calle y número *
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="colonia" 
+                                           name="colonia" placeholder="Colonia">
+                                    <label for="colonia">Colonia</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="ciudad" 
+                                           name="ciudad" placeholder="Ciudad" required>
+                                    <label for="ciudad">
+                                        <i class="fas fa-city me-2"></i>Ciudad *
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="estado" 
+                                           name="estado" placeholder="Estado" required>
+                                    <label for="estado">Estado *</label>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-3">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="codigo_postal" 
+                                           name="codigo_postal" placeholder="C.P." required
+                                           pattern="[0-9]{5}">
+                                    <label for="codigo_postal">Código Postal *</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Payment Method -->
+                    <div class="section">
+                        <h4 class="section-title">
+                            <span class="icon-wrapper">
+                                <i class="fas fa-credit-card"></i>
+                            </span>
+                            Método de Pago
+                        </h4>
+                        
+                        <input type="hidden" name="metodo_pago" value="Tarjeta de crédito">
+                        
+                        <div class="payment-card glass-card">
+                            <div class="payment-header">
+                                <h5>Tarjeta de Crédito</h5>
+                                <div class="card-icons">
+                                    <i class="fab fa-cc-visa"></i>
+                                    <i class="fab fa-cc-mastercard"></i>
+                                    <i class="fab fa-cc-amex"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="payment-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="nombre_tarjeta" 
+                                                   name="nombre_tarjeta" placeholder="Nombre en tarjeta"
+                                                   value="SIMULACIÓN DE PAGO" required>
+                                            <label for="nombre_tarjeta">
+                                                <i class="fas fa-user me-2"></i>Nombre en tarjeta
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="numero_tarjeta" 
+                                                   name="numero_tarjeta" placeholder="Número de tarjeta"
+                                                   value="4242 4242 4242 4242" required>
+                                            <label for="numero_tarjeta">
+                                                <i class="fas fa-credit-card me-2"></i>Número de tarjeta
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-4">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="fecha_expiracion" 
+                                                   name="fecha_expiracion" placeholder="MM/AA"
+                                                   value="12/30" required>
+                                            <label for="fecha_expiracion">Expiración</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-4">
+                                        <div class="form-floating">
+                                            <input type="text" class="form-control" id="cvv" 
+                                                   name="cvv" placeholder="CVV"
+                                                   value="123" required>
+                                            <label for="cvv">CVV</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-warning mt-3">
+                                    <i class="fas fa-shield-alt me-2"></i>
+                                    <strong>Simulación segura:</strong> Tus datos están protegidos. 
+                                    No se procesarán pagos reales.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Notes -->
+                    <div class="section">
+                        <h4 class="section-title">
+                            <span class="icon-wrapper">
+                                <i class="fas fa-sticky-note"></i>
+                            </span>
+                            Notas Adicionales
+                        </h4>
+                        
+                        <div class="form-floating">
+                            <textarea class="form-control" id="notas" name="notas" 
+                                      placeholder="Instrucciones especiales..." 
+                                      style="height: 100px"></textarea>
+                            <label for="notas">
+                                <i class="fas fa-comment me-2"></i>Notas para la entrega
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <!-- Terms -->
+                    <div class="terms-section">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="terminos" required>
+                            <label class="form-check-label" for="terminos">
+                                He leído y acepto los 
+                                <a href="#" class="terms-link" data-bs-toggle="modal" data-bs-target="#termsModal">
+                                    términos y condiciones
+                                </a>
+                                de la compra simuada.
+                            </label>
+                            <div class="invalid-feedback">
+                                Debes aceptar los términos para continuar.
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <a href="{% url 'carrito' %}" class="btn btn-back">
+                            <i class="fas fa-arrow-left me-2"></i> Volver al Carrito
+                        </a>
+                        
+                        <button type="submit" class="btn btn-pay" id="submitBtn">
+                            <span class="btn-text">
+                                <i class="fas fa-lock me-2"></i>
+                                Confirmar Pago
+                                <span class="amount">${{ total|floatformat:2 }}</span>
+                            </span>
+                            <span class="btn-loader">
+                                <i class="fas fa-spinner fa-spin"></i> Procesando...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Right Column - Order Summary -->
+        <div class="col-lg-4">
+            <div class="summary-card glass-card sticky-card">
+                <div class="summary-header">
+                    <h3><i class="fas fa-receipt me-2"></i>Resumen del Pedido</h3>
+                </div>
+                
+                <div class="summary-body">
+                    <!-- Total Display -->
+                    <div class="total-display">
+                        <div class="total-label">Total a Pagar</div>
+                        <div class="total-amount">${{ total|floatformat:2 }}</div>
+                        <div class="total-note">IVA incluido • Envío calculado</div>
+                    </div>
+                    
+                    <!-- Order Details -->
+                    <div class="order-details">
+                        <h5>Detalles del Pedido</h5>
+                        
+                        <div class="detail-item">
+                            <span>Subtotal</span>
+                            <span>${{ subtotal_con_descuento|default:total|floatformat:2 }}</span>
+                        </div>
+                        
+                        {% if descuento_total and descuento_total > 0 %}
+                        <div class="detail-item discount">
+                            <span><i class="fas fa-tag me-1"></i> Descuento</span>
+                            <span class="text-success">- ${{ descuento_total|floatformat:2 }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="detail-item">
+                            <span>Envío</span>
+                            <span>
+                                {% if envio == 0 %}
+                                <span class="text-success">GRATIS</span>
+                                {% else %}
+                                ${{ envio|floatformat:2 }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <div class="detail-item">
+                            <span>IVA (16%)</span>
+                            <span>${{ impuesto|default:"0.00"|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Shipping Info -->
+                    {% if not envio_gratis and faltante_envio_gratis %}
+                    <div class="shipping-alert">
+                        <i class="fas fa-truck me-2"></i>
+                        <div>
+                            <strong>¡Envío gratis disponible!</strong>
+                            <small>Agrega ${{ faltante_envio_gratis|floatformat:2 }} más para obtenerlo.</small>
+                        </div>
+                    </div>
+                    {% elif envio_gratis %}
+                    <div class="shipping-alert success">
+                        <i class="fas fa-gift me-2"></i>
+                        <div>
+                            <strong>¡Envío gratis aplicado!</strong>
+                            <small>Tu pedido califica para envío gratuito.</small>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Security Badge -->
+                    <div class="security-badge">
+                        <div class="security-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="security-info">
+                            <h6>Compra 100% Segura</h6>
+                            <p class="small">Pago simulado • Datos protegidos • Sin riesgos</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Need Help -->
+                    <div class="help-section">
+                        <i class="fas fa-headset"></i>
+                        <div>
+                            <h6>¿Necesitas ayuda?</h6>
+                            <p class="small mb-0">Soporte disponible las 24 horas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-file-contract me-2"></i>
+                    Términos y Condiciones
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Simulación Educativa</h6>
+                <p>Este sistema es exclusivamente para fines educativos y demostración.</p>
+                
+                <h6>Sin Transacciones Reales</h6>
+                <p>No se procesarán pagos reales ni se enviarán productos físicos.</p>
+                
+                <h6>Protección de Datos</h6>
+                <p>Tus datos de prueba están protegidos y no serán compartidos.</p>
+                
+                <h6>Datos de Tarjeta de Prueba</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-credit-card me-2"></i> Número: 4242 4242 4242 4242</li>
+                    <li><i class="fas fa-calendar me-2"></i> Fecha: Cualquiera futura</li>
+                    <li><i class="fas fa-key me-2"></i> CVV: Cualquier número</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Variables de colores */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --shadow: 0 8px 32px rgba(31, 38, 135, 0.1);
+    --border-radius: 20px;
+}
+
+/* Contenedor principal */
+.checkout-container {
+    padding: 2rem 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+/* Progress Steps */
+.progress-steps {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 3rem;
+    padding: 0 1rem;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+.step-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.step.completed .step-icon {
+    background: var(--success-gradient);
+    color: white;
+    box-shadow: 0 5px 15px rgba(67, 233, 123, 0.4);
+}
+
+.step.active .step-icon {
+    background: var(--primary-gradient);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+.step:not(.completed):not(.active) .step-icon {
+    background: white;
+    color: #adb5bd;
+    border: 2px solid #e9ecef;
+}
+
+.step-label {
+    font-weight: 600;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.step.active .step-label {
+    color: #667eea;
+    font-weight: 700;
+}
+
+.step-line {
+    flex: 1;
+    height: 4px;
+    background: linear-gradient(to right, #43e97b, #e9ecef);
+    margin: 0 -35px;
+    z-index: 1;
+}
+
+.step-line.completed {
+    background: linear-gradient(to right, #43e97b, #667eea);
+}
+
+/* Glass Card Effect */
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+}
+
+.card-header {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 1.5rem 2rem;
+    border-bottom: none;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-weight: 600;
+}
+
+/* Sections */
+.section {
+    padding: 2rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    color: #495057;
+    font-weight: 600;
+}
+
+.icon-wrapper {
+    background: var(--primary-gradient);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+}
+
+/* Form Styles */
+.form-floating {
+    position: relative;
+}
+
+.form-floating > .form-control {
+    height: calc(3.5rem + 2px);
+    line-height: 1.25;
+    padding: 1rem 0.75rem;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+}
+
+.form-floating > .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: white;
+}
+
+.form-floating > label {
+    padding: 1rem 0.75rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Payment Card */
+.payment-card {
+    border: 2px solid #667eea;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.payment-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.payment-header h5 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.card-icons {
+    font-size: 1.5rem;
+}
+
+.card-icons i {
+    margin-left: 0.5rem;
+    opacity: 0.9;
+}
+
+.payment-body {
+    padding: 1.5rem;
+}
+
+/* Summary Card */
+.sticky-card {
+    position: sticky;
+    top: 2rem;
+}
+
+.summary-header {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 1.5rem;
+    border-bottom: none;
+}
+
+.summary-header h3 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.summary-body {
+    padding: 2rem;
+}
+
+.total-display {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    margin-bottom: 2rem;
+}
+
+.total-label {
+    font-size: 1rem;
+    color: #6c757d;
+    margin-bottom: 0.5rem;
+}
+
+.total-amount {
+    font-size: 3rem;
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.5rem;
+}
+
+.total-note {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Order Details */
+.order-details {
+    margin-bottom: 2rem;
+}
+
+.order-details h5 {
+    color: #495057;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px dashed #e9ecef;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item.discount {
+    color: #28a745;
+    font-weight: 600;
+}
+
+/* Alerts */
+.shipping-alert {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.shipping-alert.success {
+    background: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+}
+
+.shipping-alert i {
+    font-size: 1.5rem;
+    margin-right: 1rem;
+}
+
+.shipping-alert div {
+    flex: 1;
+}
+
+/* Security Badge */
+.security-badge {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    margin-bottom: 1.5rem;
+}
+
+.security-icon {
+    font-size: 2rem;
+    color: #667eea;
+    margin-right: 1rem;
+}
+
+.security-info h6 {
+    margin: 0 0 0.25rem 0;
+    color: #495057;
+}
+
+.security-info p {
+    margin: 0;
+    color: #6c757d;
+}
+
+/* Help Section */
+.help-section {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+}
+
+.help-section i {
+    font-size: 1.5rem;
+    color: #667eea;
+    margin-right: 1rem;
+}
+
+.help-section h6 {
+    margin: 0 0 0.25rem 0;
+    color: #495057;
+}
+
+.help-section p {
+    margin: 0;
+    color: #6c757d;
+}
+
+/* Terms Section */
+.terms-section {
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 15px;
+    margin: 2rem;
+}
+
+.terms-link {
+    color: #667eea;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.terms-link:hover {
+    color: #764ba2;
+    text-decoration: underline;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    padding: 2rem;
+    gap: 1rem;
+}
+
+.btn-back {
+    padding: 1rem 2rem;
+    background: white;
+    border: 2px solid #e9ecef;
+    color: #495057;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-back:hover {
+    background: #f8f9fa;
+    border-color: #667eea;
+    color: #667eea;
+    transform: translateY(-2px);
+}
+
+.btn-pay {
+    flex: 1;
+    padding: 1rem 2rem;
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    min-height: 60px;
+}
+
+.btn-pay:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+.btn-pay .btn-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-pay .amount {
+    margin-left: 0.5rem;
+    font-weight: 700;
+    background: white;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.btn-pay .btn-loader {
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-pay.processing .btn-text {
+    display: none;
+}
+
+.btn-pay.processing .btn-loader {
+    display: flex;
+}
+
+/* Modal */
+.modal-content {
+    border-radius: var(--border-radius);
+    border: none;
+    box-shadow: var(--shadow);
+}
+
+.modal-header {
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+    border: none;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .sticky-card {
+        position: static;
+        margin-top: 2rem;
+    }
+    
+    .progress-steps {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .step-line {
+        display: none;
+    }
+    
+    .step {
+        flex-direction: row;
+        margin-bottom: 1rem;
+    }
+    
+    .step-icon {
+        margin-right: 1rem;
+        margin-bottom: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .total-amount {
+        font-size: 2.5rem;
+    }
+}
+
+/* Animation for form focus */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.form-control:focus {
+    animation: pulse 0.3s ease;
+}
+
+/* Floating label animation */
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+    color: #667eea;
+    font-weight: 600;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('checkoutForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const totalAmount = '{{ total|floatformat:2 }}';
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (!form.checkValidity()) {
+            e.stopPropagation();
+            form.classList.add('was-validated');
+            return false;
+        }
+        
+        if (!document.getElementById('terminos').checked) {
+            alert('Debes aceptar los términos y condiciones para continuar.');
+            document.getElementById('terminos').focus();
+            return false;
+        }
+        
+        // Show confirmation modal
+        Swal.fire({
+            title: '¿Confirmar pago?',
+            html: `
+                <div class="text-center">
+                    <h4 class="text-primary mb-3">$${totalAmount}</h4>
+                    <p class="text-muted mb-2">Esta es una simulación educativa</p>
+                    <div class="alert alert-warning small">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No se realizará ningún cargo real
+                    </div>
+                </div>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, confirmar pago',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#667eea',
+            cancelButtonColor: '#6c757d',
+            customClass: {
+                popup: 'rounded-4',
+                confirmButton: 'btn-lg',
+                cancelButton: 'btn-lg'
+            },
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutUp'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Show processing animation
+                submitBtn.classList.add('processing');
+                submitBtn.disabled = true;
+                
+                // Simulate processing delay
+                setTimeout(() => {
+                    // Success animation
+                    Swal.fire({
+                        title: '✅ Pago Simulado Exitoso',
+                        html: `
+                            <div class="text-center py-3">
+                                <div class="success-animation">
+                                    <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
+                                </div>
+                                <h5 class="mb-2">Pedido procesado correctamente</h5>
+                                <p class="text-muted">Tu carrito ha sido vaciado automáticamente</p>
+                                <div class="alert alert-info mt-3">
+                                    Redirigiendo a la confirmación...
+                                </div>
+                            </div>
+                        `,
+                        icon: 'success',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true,
+                        willClose: () => {
+                            // Submit the form
+                            form.submit();
+                        }
+                    });
+                }, 1500);
+            }
+        });
+        
+        return false;
+    });
+    
+    // Input masks
+    const telefono = document.getElementById('telefono');
+    if (telefono) {
+        telefono.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '').substring(0, 10);
+        });
+    }
+    
+    const cp = document.getElementById('codigo_postal');
+    if (cp) {
+        cp.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '').substring(0, 5);
+        });
+    }
+    
+    const tarjeta = document.getElementById('numero_tarjeta');
+    if (tarjeta) {
+        tarjeta.addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            value = value.replace(/(\d{4})(?=\d)/g, '$1 ');
+            this.value = value.substring(0, 19);
+        });
+    }
+    
+    const expiracion = document.getElementById('fecha_expiracion');
+    if (expiracion) {
+        expiracion.addEventListener('input', function(e) {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            this.value = value.substring(0, 5);
+        });
+    }
+    
+    const cvv = document.getElementById('cvv');
+    if (cvv) {
+        cvv.addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '').substring(0, 4);
+        });
+    }
+    
+    // Auto-focus first field
+    document.getElementById('nombre').focus();
+    
+    // Add loading SweetAlert if not loaded
+    if (typeof Swal === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/sweetalert2@11';
+        document.head.appendChild(script);
+    }
+});
+
+// Add CSS animation library if not present
+if (!document.querySelector('link[href*="animate.css"]')) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css';
+    document.head.appendChild(link);
+}
+</script>
+
+<!-- SweetAlert2 CSS (if not already loaded) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+{% endblock %}

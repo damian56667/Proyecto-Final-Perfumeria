@@ -1,0 +1,203 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Marcas - Esencia Noble{% endblock %}
+
+{% block extra_css %}
+<style>
+    .brand-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        height: 100%;
+    }
+    
+    .brand-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--dorado);
+        box-shadow: 0 15px 30px rgba(184, 134, 11, 0.1);
+    }
+    
+    .brand-logo {
+        height: 80px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .brand-logo img {
+        max-height: 80px;
+        max-width: 100%;
+        object-fit: contain;
+    }
+    
+    .country-flag {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+    
+    .products-count {
+        background: var(--gris);
+        color: var(--negro);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="section-title">Nuestras Marcas</h1>
+        <p class="text-muted">Las mejores casas perfumeras del mundo en un solo lugar</p>
+    </div>
+    
+    <!-- Estadísticas -->
+    <div class="row mb-5">
+        <div class="col-md-3 col-6 mb-3">
+            <div class="text-center p-3 bg-white rounded shadow-sm">
+                <div class="display-6 fw-bold text-dorado">{{ marcas|length }}</div>
+                <div class="text-muted">Marcas</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3">
+            <div class="text-center p-3 bg-white rounded shadow-sm">
+                <div class="display-6 fw-bold text-dorado">{{ paises_count }}</div>
+                <div class="text-muted">Países</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3">
+            <div class="text-center p-3 bg-white rounded shadow-sm">
+                <div class="display-6 fw-bold text-dorado">{{ total_productos }}</div>
+                <div class="text-muted">Productos</div>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3">
+            <div class="text-center p-3 bg-white rounded shadow-sm">
+                <div class="display-6 fw-bold text-dorado">{{ marcas_con_logo }}</div>
+                <div class="text-muted">Con Logo</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filtro por países -->
+    {% if paises %}
+    <div class="mb-4">
+        <h5 class="fw-bold mb-3">Filtrar por país:</h5>
+        <div class="d-flex flex-wrap gap-2 mb-4">
+            <a href="{% url 'marcas' %}" class="btn filter-btn {% if not request.GET.pais %}active{% endif %}">
+                Todos
+            </a>
+            {% for pais in paises %}
+            <a href="{% url 'marcas' %}?pais={{ pais|urlencode }}" 
+               class="btn filter-btn {% if request.GET.pais == pais %}active{% endif %}">
+                {{ pais }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Grid de Marcas -->
+    <div class="row">
+        {% for marca in marcas %}
+        <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+            <div class="brand-card">
+                <!-- Logo -->
+                <div class="brand-logo">
+                    {% if marca.imagen %}
+                    <img src="{{ marca.imagen.url }}" alt="{{ marca.nombre }}">
+                    {% else %}
+                    <div class="text-center">
+                        <i class="fas fa-crown fa-3x text-dorado mb-2"></i>
+                        <h5 class="fw-bold">{{ marca.nombre }}</h5>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Nombre -->
+                <h5 class="mb-3">{{ marca.nombre }}</h5>
+                
+                <!-- País -->
+                {% if marca.pais_origen %}
+                <div class="mb-3">
+                    <span class="text-muted">
+                        <i class="fas fa-globe-americas me-1"></i> {{ marca.pais_origen }}
+                    </span>
+                </div>
+                {% endif %}
+                
+                <!-- Descripción -->
+                {% if marca.descripcion %}
+                <p class="text-muted small mb-3">
+                    {{ marca.descripcion|truncatechars:80 }}
+                </p>
+                {% endif %}
+                
+                <!-- Productos -->
+                <div class="mb-3">
+                    <span class="products-count">
+                        {{ marca.productos.count }} productos
+                    </span>
+                </div>
+                
+                <!-- Botones -->
+                <div class="d-flex gap-2 justify-content-center">
+                    <a href="{% url 'perfumes' %}?marca={{ marca.id }}" class="btn btn-outline-gold btn-sm">
+                        <i class="fas fa-eye me-1"></i> Ver Productos
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="fas fa-crown fa-4x text-muted mb-3"></i>
+            <h4 class="text-muted">No hay marcas disponibles</h4>
+            <p class="text-muted">Pronto agregaremos nuevas marcas</p>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Información adicional -->
+    <div class="mt-5 pt-5 border-top">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h3 class="mb-4">¿Eres una marca y quieres vender con nosotros?</h3>
+                <p class="text-muted mb-4">
+                    En Esencia Noble trabajamos con las mejores casas perfumeras del mundo. 
+                    Si tienes una marca de perfumes y quieres llegar a más clientes, contáctanos.
+                </p>
+                <a href="{% url 'contacto' %}" class="btn btn-gold">
+                    <i class="fas fa-envelope me-2"></i> Contactar
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Filtro alfabético
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

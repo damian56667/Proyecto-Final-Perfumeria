@@ -1,0 +1,123 @@
+/* ===========================
+   PANEL ADMIN – ESTILO ELEGANTE
+=========================== */
+
+:root {
+    --dorado: #B8860B;
+    --negro: #1C1C1C;
+    --blanco: #F5F5F5;
+    --gris: #E0E0E0;
+}
+
+/* GENERAL */
+body {
+    font-family: "Poppins", Arial, sans-serif;
+    background: var(--gris);
+    margin: 0;
+}
+
+header {
+    background: var(--blanco);
+    padding: 18px;
+    border-bottom: 3px solid var(--dorado);
+}
+
+/* NAV ADMIN */
+.admin-nav {
+    background: var(--negro);
+    padding: 12px;
+    text-align: center;
+}
+
+.admin-nav a {
+    color: var(--dorado);
+    margin: 0 14px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.admin-nav a:hover {
+    color: var(--blanco);
+}
+
+/* TABLAS */
+.admin-table {
+    width: 90%;
+    margin: 25px auto;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border-collapse: collapse;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.admin-table th {
+    padding: 12px;
+    background: var(--negro);
+    color: var(--dorado);
+    font-weight: 600;
+}
+
+.admin-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--gris);
+}
+
+.admin-table tr:hover {
+    background: #f7f1df;
+}
+
+/* BOTONES DEL PANEL */
+.btn-admin {
+    background: var(--dorado);
+    color: var(--negro);
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-admin:hover {
+    background: #d4a742;
+    color: var(--blanco);
+}
+
+.btn-danger {
+    background: #B30000;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.btn-danger:hover {
+    background: #ff2b2b;
+}
+
+/* FORMULARIO ADMIN */
+.admin-form {
+    width: 70%;
+    margin: 25px auto;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid var(--gris);
+    border-radius: 8px;
+    margin-bottom: 14px;
+}
+
+.admin-form input:focus,
+.admin-form select:focus,
+.admin-form textarea:focus {
+    border-color: var(--dorado);
+    outline: none;
+}

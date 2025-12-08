@@ -1,0 +1,406 @@
+<!-- core/templates/core/ofertas.html -->
+{% extends "core/base.html" %}
+{% block title %}Ofertas Especiales - EsenciaNoble{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    
+    <!-- Hero Banner -->
+    <div class="hero-banner text-center mb-5 p-5 rounded-4" style="background: linear-gradient(135deg, #1a237e 0%, #283593 100%);">
+        <h1 class="display-4 fw-bold text-white mb-3">
+            <i class="fas fa-percent me-3"></i>Ofertas Exclusivas
+        </h1>
+        <p class="lead text-white mb-0">
+            Descuentos increíbles en nuestras mejores fragancias
+        </p>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">
+                    <i class="fas fa-fire text-danger me-2"></i>
+                    Promociones Activas
+                    <span class="badge bg-danger ms-2">{{ ofertas_activas|length }}</span>
+                </h2>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-primary filter-btn active" data-filter="all">
+                        Todas
+                    </button>
+                    <button class="btn btn-outline-primary filter-btn" data-filter="active">
+                        Activas
+                    </button>
+                    <button class="btn btn-outline-primary filter-btn" data-filter="soon">
+                        Próximas
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Grid de Ofertas -->
+    <div class="row" id="ofertasGrid">
+        {% for oferta in ofertas %}
+        <div class="col-lg-4 col-md-6 mb-4" 
+             data-status="{% if oferta.activo %}active{% elif oferta.fecha_inicio > hoy %}soon{% else %}expired{% endif %}">
+            
+            <div class="card h-100 shadow-sm border-0 overflow-hidden oferta-card 
+                        {% if oferta.activo %}border-primary border-2{% endif %}">
+                
+                <!-- Imagen del Producto Principal -->
+                <div class="card-img-container position-relative">
+                    {% if oferta.tiene_imagen %}
+                    <img src="{{ oferta.imagen_url }}" 
+                         class="card-img-top" 
+                         alt="{{ oferta.nombre }}"
+                         style="height: 250px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                         style="height: 250px;">
+                        <i class="fas fa-percent fa-4x text-muted"></i>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Badge de descuento -->
+                    <div class="position-absolute top-0 end-0 m-3">
+                        <div class="discount-badge-circle">
+                            <span class="discount-percent d-block">
+                                -{{ oferta.descuento_porcentaje|floatformat:0 }}%
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Badge de estado -->
+                    <div class="position-absolute top-0 start-0 m-3">
+                        {% if oferta.activo %}
+                        <span class="badge bg-success py-2 px-3">
+                            <i class="fas fa-bolt me-1"></i> ACTIVA
+                        </span>
+                        {% elif oferta.fecha_inicio > hoy %}
+                        <span class="badge bg-warning py-2 px-3">
+                            <i class="fas fa-clock me-1"></i> PRÓXIMA
+                        </span>
+                        {% else %}
+                        <span class="badge bg-secondary py-2 px-3">
+                            <i class="fas fa-calendar-times me-1"></i> FINALIZADA
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Título de la oferta -->
+                    <h5 class="card-title mb-2 text-primary">{{ oferta.nombre }}</h5>
+                    
+                    <!-- PRECIOS ORIGINAL Y CON DESCUENTO -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted" style="text-decoration: line-through; font-size: 0.9rem;">
+                                    ${{ oferta.precio_total_original|floatformat:2 }}
+                                </span>
+                                <div class="mt-1">
+                                    <small class="text-muted">Precio original</small>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <h4 class="text-success fw-bold mb-0">
+                                    ${{ oferta.precio_total_con_descuento|floatformat:2 }}
+                                </h4>
+                                <small class="text-muted">Precio con descuento</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Descripción -->
+                    {% if oferta.descripcion %}
+                    <p class="card-text text-muted mb-3">{{ oferta.descripcion|truncatechars:100 }}</p>
+                    {% endif %}
+                    
+                    <!-- Periodo de validez -->
+                    <div class="mb-3 bg-light p-3 rounded">
+                        <div class="row">
+                            <div class="col-6">
+                                <p class="mb-1 small">
+                                    <i class="fas fa-calendar-alt me-1 text-primary"></i>
+                                    <strong>Inicio:</strong>
+                                </p>
+                                <p class="mb-0 text-dark">{{ oferta.fecha_inicio|date:"d/m/Y" }}</p>
+                            </div>
+                            <div class="col-6">
+                                <p class="mb-1 small">
+                                    <i class="fas fa-calendar-check me-1 text-primary"></i>
+                                    <strong>Fin:</strong>
+                                </p>
+                                <p class="mb-0 text-dark">{{ oferta.fecha_fin|date:"d/m/Y" }}</p>
+                            </div>
+                        </div>
+                        {% if oferta.activo %}
+                        <div class="mt-2">
+                            <span class="text-success">
+                                <i class="fas fa-clock me-1"></i>
+                                <strong>{{ oferta.dias_restantes }} días restantes</strong>
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Productos incluidos -->
+                    <div class="mb-4">
+                        <h6 class="mb-3 border-bottom pb-2">
+                            <i class="fas fa-gift me-2"></i>
+                            Productos incluidos ({{ oferta.total_productos }})
+                        </h6>
+                        
+                        {% for producto in oferta.productos|slice:":3" %}
+                        <div class="producto-item mb-3 p-3 border rounded">
+                            <div class="d-flex align-items-start">
+                                <!-- Imagen del producto -->
+                                {% if producto.tiene_imagen %}
+                                <div class="me-3">
+                                    <img src="{{ producto.imagen_url }}" 
+                                         alt="{{ producto.nombre }}"
+                                         class="rounded" 
+                                         style="width: 60px; height: 60px; object-fit: cover;">
+                                </div>
+                                {% endif %}
+                                
+                                <div class="flex-grow-1">
+                                    <!-- Nombre del producto -->
+                                    <h6 class="mb-1">{{ producto.nombre|truncatechars:25 }}</h6>
+                                    
+                                    <!-- Precios individuales -->
+                                    <div class="precios-container">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="text-muted small mb-1">Precio original:</div>
+                                                <div class="text-dark" style="text-decoration: line-through;">
+                                                    ${{ producto.precio|floatformat:2 }}
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="text-muted small mb-1">Precio con descuento:</div>
+                                                <div class="fw-bold text-success">
+                                                    ${{ producto.precio_con_descuento|floatformat:2 }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Botón ver producto -->
+                                    <div class="mt-2">
+                                        <!-- ENLACE CORREGIDO: usando producto_detail -->
+                                        <a href="{% url 'producto_detail' producto.id %}" class="btn btn-sm btn-outline-primary w-100">
+                                            <i class="fas fa-eye me-1"></i> Ver producto
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        {% if oferta.total_productos > 3 %}
+                        <div class="text-center">
+                            <small class="text-muted">
+                                <i class="fas fa-ellipsis-h me-1"></i>
+                                +{{ oferta.total_productos|add:"-3" }} producto(s) más
+                            </small>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Información de ahorro -->
+                    {% if oferta.descuento_porcentaje > 0 %}
+                    <div class="mb-3 p-3 border rounded">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="mb-2">
+                                    <i class="fas fa-percent"></i>
+                                </div>
+                                <div class="small">Descuento</div>
+                                <div class="fw-bold">{{ oferta.descuento_porcentaje|floatformat:0 }}%</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="mb-2">
+                                    <i class="fas fa-piggy-bank"></i>
+                                </div>
+                                <div class="small">Ahorras</div>
+                                <div class="fw-bold text-danger">${{ oferta.ahorro_total|floatformat:2 }}</div>
+                            </div>
+                            <div class="col-4">
+                                <div class="mb-2">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="small">Productos</div>
+                                <div class="fw-bold">{{ oferta.total_productos }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Botones de acción -->
+                <div class="card-footer bg-transparent">
+                    {% if oferta.activo %}
+                    <div class="d-grid">
+                        <!-- ENLACE REAL para agregar al carrito -->
+                        <a href="{% url 'agregar_oferta_carrito' oferta.id %}" class="btn btn-primary">
+    <i class="fas fa-shopping-cart me-2"></i>
+    Agregar al Carrito
+</a>
+                    </div>
+                    {% else %}
+                    <button class="btn btn-outline-secondary w-100" disabled>
+                        <i class="fas fa-clock me-2"></i>
+                        {% if oferta.fecha_inicio > hoy %}
+                        Disponible pronto
+                        {% else %}
+                        Oferta finalizada
+                        {% endif %}
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <!-- Estado cuando NO HAY ofertas -->
+        <div class="col-12">
+            <div class="text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-percent fa-5x text-muted"></i>
+                </div>
+                <h3 class="text-muted mb-3">No hay ofertas disponibles</h3>
+                <p class="text-muted mb-4">
+                    ¡Estamos preparando nuevas promociones especiales para ti!
+                </p>
+                <div class="mt-4">
+                    <a href="{% url 'inicio' %}" class="btn btn-outline-primary me-3">
+                        <i class="fas fa-home me-2"></i>Volver al inicio
+                    </a>
+                    <a href="{% url 'perfumes' %}" class="btn btn-primary">
+                        <i class="fas fa-store me-2"></i>Ver productos
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+/* Estilos personalizados */
+.hero-banner {
+    margin-top: -20px;
+}
+
+.card {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.card-img-container {
+    position: relative;
+}
+
+.discount-badge-circle {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #ff4081 0%, #f50057 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(255, 64, 129, 0.3);
+    border: 2px solid white;
+}
+
+.discount-percent {
+    color: white;
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+.producto-item {
+    background: #f8f9fa;
+    border: 1px solid #e0e0e0;
+}
+
+.precios-container {
+    background: white;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    border: none;
+    padding: 12px;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #283593 0%, #1a237e 100%);
+    transform: translateY(-1px);
+}
+
+.btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .card-img-top {
+        height: 200px !important;
+    }
+    
+    .discount-badge-circle {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .discount-percent {
+        font-size: 1.1rem;
+    }
+}
+</style>
+
+<script>
+// Filtrado de ofertas
+document.addEventListener('DOMContentLoaded', function() {
+    // Botones de filtro
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Quitar activo de todos los botones
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            // Agregar activo al botón clickeado
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            const cards = document.querySelectorAll('#ofertasGrid > div');
+            
+            cards.forEach(card => {
+                if (filter === 'all') {
+                    card.style.display = '';
+                } else {
+                    if (card.dataset.status === filter) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

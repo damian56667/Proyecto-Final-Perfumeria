@@ -1,0 +1,18 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Pedido #{{ pedido.id }}{% endblock %}
+{% block content %}
+<h2>Pedido #{{ pedido.id }}</h2>
+<p>Usuario: {{ pedido.usuario.username }}</p>
+<p>Fecha: {{ pedido.fecha }}</p>
+<p>Estado: {{ pedido.estado }}</p>
+<p>Total: ${{ pedido.total }}</p>
+
+<h3>Items</h3>
+<ul>
+  {% for it in pedido.items.all %}
+    <li>{{ it.producto.nombre }} - {{ it.cantidad }} x ${{ it.precio_unitario }} = ${{ it.subtotal }}</li>
+  {% endfor %}
+</ul>
+
+<a href="{% url 'admin_pedidos' %}" class="btn-admin">Volver</a>
+{% endblock %}

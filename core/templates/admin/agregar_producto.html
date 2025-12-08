@@ -1,0 +1,11 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Nuevo Producto{% endblock %}
+{% block content %}
+<h2>Nuevo Producto</h2>
+<form method="post" enctype="multipart/form-data" class="admin-form">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="btn-admin" type="submit">Guardar</button>
+  <a href="{% url 'admin_productos' %}">Cancelar</a>
+</form>
+{% endblock %}

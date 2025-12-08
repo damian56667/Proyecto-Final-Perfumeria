@@ -1,0 +1,149 @@
+<!-- core/templates/core/contacto.html -->
+{% extends "core/base.html" %}
+{% block title %}Contacto - EsenciaNoble{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">
+                        <i class="fas fa-envelope me-2"></i>
+                        Contáctanos
+                    </h3>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Mensajes -->
+                    {% if messages %}
+                    <div class="mb-4">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row">
+                        <!-- Formulario de contacto -->
+                        <div class="col-md-6">
+                            <h4 class="mb-4">Envíanos un mensaje</h4>
+                            
+                            <form method="post">
+                                {% csrf_token %}
+                                
+                                <div class="mb-3">
+                                    <label for="nombre" class="form-label">Nombre</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="mensaje" class="form-label">Mensaje</label>
+                                    <textarea class="form-control" id="mensaje" name="mensaje" rows="5" required></textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-2"></i>
+                                    Enviar Mensaje
+                                </button>
+                            </form>
+                        </div>
+                        
+                        <!-- Información de contacto -->
+                        <div class="col-md-6">
+                            <h4 class="mb-4">Información de contacto</h4>
+                            
+                            <div class="mb-4">
+                                <h5 class="text-primary">
+                                    <i class="fas fa-store me-2"></i>
+                                    EsenciaNoble
+                                </h5>
+                                <p class="mb-1">Tienda de perfumes premium</p>
+                                <p class="mb-0">Los mejores aromas para cada ocasión</p>
+                            </div>
+                            
+                            <div class="contact-info">
+                                <div class="mb-3">
+                                    <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                                    <strong>Dirección:</strong>
+                                    <p class="mb-0">Av. Principal 123, Ciudad</p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <i class="fas fa-phone text-primary me-2"></i>
+                                    <strong>Teléfono:</strong>
+                                    <p class="mb-0">+1 (234) 567-8900</p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <i class="fas fa-envelope text-primary me-2"></i>
+                                    <strong>Email:</strong>
+                                    <p class="mb-0">info@esencianoble.com</p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <i class="fas fa-clock text-primary me-2"></i>
+                                    <strong>Horario:</strong>
+                                    <p class="mb-0">Lunes a Viernes: 9:00 - 18:00</p>
+                                    <p class="mb-0">Sábados: 10:00 - 14:00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mapa (opcional) -->
+            <div class="card mt-4 shadow">
+                <div class="card-body">
+                    <h5 class="mb-3">
+                        <i class="fas fa-map-marked-alt me-2 text-primary"></i>
+                        Nuestra ubicación
+                    </h5>
+                    <div class="map-placeholder bg-light rounded p-4 text-center">
+                        <i class="fas fa-map fa-3x text-muted mb-3"></i>
+                        <p class="text-muted mb-0">Mapa de ubicación</p>
+                        <small class="text-muted">(Integrar Google Maps aquí)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.contact-info p {
+    margin-left: 28px;
+}
+
+.map-placeholder {
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    border-radius: 10px;
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+    border: none;
+    padding: 10px 25px;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #283593 0%, #1a237e 100%);
+}
+</style>
+{% endblock %}

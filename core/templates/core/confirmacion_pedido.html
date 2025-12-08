@@ -1,0 +1,328 @@
+{% extends "core/base.html" %}
+{% block title %}Confirmación de Pedido - Perfumería{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Tarjeta principal -->
+            <div class="card shadow-lg border-0">
+                <!-- Encabezado con gradiente -->
+                <div class="card-header bg-gradient-success text-white py-4 text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-check-circle fa-4x"></i>
+                    </div>
+                    <h1 class="mb-2">¡Pedido Confirmado!</h1>
+                    <p class="lead mb-0">Tu compra ha sido procesada exitosamente</p>
+                </div>
+                
+                <div class="card-body p-5">
+                    <!-- Número de pedido destacado -->
+                    <div class="text-center mb-5">
+                        <div class="badge bg-primary fs-5 px-4 py-2 mb-3">
+                            <i class="fas fa-hashtag me-2"></i> Pedido #{{ pedido.id }}
+                        </div>
+                        <h2 class="text-primary">${{ pedido.total|floatformat:2 }}</h2>
+                        <p class="text-muted">Total pagado</p>
+                    </div>
+                    
+                    <!-- Resumen del pedido -->
+                    <div class="mb-5">
+                        <h5 class="border-bottom pb-2 mb-4">
+                            <i class="fas fa-receipt me-2"></i>
+                            Resumen del Pedido
+                        </h5>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="card border h-100">
+                                    <div class="card-body">
+                                        <h6 class="text-muted mb-3">
+                                            <i class="fas fa-calendar me-2"></i> Fecha
+                                        </h6>
+                                        <p class="fs-5 mb-0">{{ pedido.fecha|date:"d/m/Y H:i" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="card border h-100">
+                                    <div class="card-body">
+                                        <h6 class="text-muted mb-3">
+                                            <i class="fas fa-credit-card me-2"></i> Método de Pago
+                                        </h6>
+                                        <p class="fs-5 mb-0">{{ pedido.metodo_pago }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="card border h-100">
+                                    <div class="card-body">
+                                        <h6 class="text-muted mb-3">
+                                            <i class="fas fa-info-circle me-2"></i> Estado
+                                        </h6>
+                                        <p class="fs-5 mb-0">
+                                            <span class="badge bg-warning text-dark">{{ pedido.estado }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <div class="card border h-100">
+                                    <div class="card-body">
+                                        <h6 class="text-muted mb-3">
+                                            <i class="fas fa-box me-2"></i> Items
+                                        </h6>
+                                        <p class="fs-5 mb-0">{{ pedido.items.count }} productos</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Lista de productos -->
+                    {% if pedido.items.all %}
+                    <div class="mb-5">
+                        <h5 class="border-bottom pb-2 mb-4">
+                            <i class="fas fa-boxes me-2"></i>
+                            Productos Comprados
+                        </h5>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-end">Precio</th>
+                                        <th class="text-end">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in pedido.items.all %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ item.producto.nombre }}</strong>
+                                            {% if item.producto.codigo %}
+                                            <br><small class="text-muted">Código: {{ item.producto.codigo }}</small>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">{{ item.cantidad }}</td>
+                                        <td class="text-end">${{ item.precio_unitario|floatformat:2 }}</td>
+                                        <td class="text-end fw-bold">${{ item.subtotal|floatformat:2 }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot class="table-secondary">
+                                    <tr>
+                                        <td colspan="3" class="text-end fw-bold">Total:</td>
+                                        <td class="text-end fw-bold fs-5 text-primary">${{ pedido.total|floatformat:2 }}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Alertas importantes -->
+                    <div class="row mb-5">
+                        <div class="col-md-6 mb-3">
+                            <div class="alert alert-success h-100">
+                                <h6 class="alert-heading">
+                                    <i class="fas fa-shopping-cart me-2"></i> Carrito Vaciado
+                                </h6>
+                                <p class="mb-0">Tu carrito de compras ha sido vaciado automáticamente.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="alert alert-info h-100">
+                                <h6 class="alert-heading">
+                                    <i class="fas fa-info-circle me-2"></i> Simulación
+                                </h6>
+                                <p class="mb-0">Este es un sistema educativo. No se procesaron pagos reales.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de acción -->
+                    <div class="text-center">
+                        <div class="d-grid gap-3 d-md-flex justify-content-center">
+                            <a href="{% url 'perfumes' %}" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-store me-2"></i> Seguir Comprando
+                            </a>
+                            
+                            <a href="{% url 'carrito' %}" class="btn btn-outline-primary btn-lg">
+                                <i class="fas fa-shopping-cart me-2"></i> Ver Carrito
+                            </a>
+                            
+                            {% if user.is_staff %}
+                            <a href="{% url 'admin_pedidos' %}" class="btn btn-outline-secondary btn-lg">
+                                <i class="fas fa-eye me-2"></i> Ver en Admin
+                            </a>
+                            {% endif %}
+                        </div>
+                        
+                        <p class="text-muted mt-4 small">
+                            <i class="fas fa-envelope me-1"></i>
+                            Recibirás un correo de confirmación en <strong>{{ user.email }}</strong>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="card-footer text-center py-3 bg-light">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt me-1"></i> Compra segura
+                            </small>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted">
+                                <i class="fas fa-headset me-1"></i> Soporte 24/7
+                            </small>
+                        </div>
+                        <div class="col-md-4">
+                            <small class="text-muted">
+                                <i class="fas fa-truck me-1"></i> Envío rápido
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pasos del proceso -->
+            <div class="mt-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-center">
+                        <div class="rounded-circle bg-light border d-inline-flex align-items-center justify-content-center" 
+                             style="width: 50px; height: 50px;">
+                            <i class="fas fa-shopping-cart text-muted"></i>
+                        </div>
+                        <p class="mt-2 mb-0 small text-muted">Carrito</p>
+                    </div>
+                    
+                    <div class="flex-grow-1 border-top"></div>
+                    
+                    <div class="text-center">
+                        <div class="rounded-circle bg-light border d-inline-flex align-items-center justify-content-center" 
+                             style="width: 50px; height: 50px;">
+                            <i class="fas fa-credit-card text-muted"></i>
+                        </div>
+                        <p class="mt-2 mb-0 small text-muted">Pago</p>
+                    </div>
+                    
+                    <div class="flex-grow-1 border-top"></div>
+                    
+                    <div class="text-center">
+                        <div class="rounded-circle bg-success text-white d-inline-flex align-items-center justify-content-center" 
+                             style="width: 50px; height: 50px;">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <p class="mt-2 mb-0 small fw-bold">Confirmado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.bg-gradient-success {
+    background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+}
+
+.card {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.btn-outline-primary {
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+.badge {
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+}
+
+/* Animación de check */
+.fa-check-circle {
+    animation: scaleIn 0.5s ease-out;
+}
+
+@keyframes scaleIn {
+    0% { transform: scale(0); opacity: 0; }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Animación para el total */
+.text-primary {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar animación de éxito
+    console.log('✅ Pedido confirmado exitosamente');
+    console.log('📦 Número de pedido:', {{ pedido.id }});
+    console.log('💰 Total:', '${{ pedido.total|floatformat:2 }}');
+    
+    // Forzar recarga del carrito si está en localStorage
+    if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('ultimo_pedido', {{ pedido.id }});
+        localStorage.setItem('ultimo_pedido_fecha', new Date().toISOString());
+    }
+    
+    // Mostrar mensaje de éxito después de 1 segundo
+    setTimeout(function() {
+        const successAlert = document.createElement('div');
+        successAlert.className = 'position-fixed bottom-0 end-0 m-3 alert alert-success alert-dismissible fade show';
+        successAlert.style.zIndex = '1050';
+        successAlert.innerHTML = `
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>Pedido registrado!</strong> Puedes verlo en tu historial.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.body.appendChild(successAlert);
+    }, 1000);
+});
+</script>
+{% endblock %}

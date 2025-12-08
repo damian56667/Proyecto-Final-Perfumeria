@@ -1,0 +1,86 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Confirmar Eliminación{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger shadow">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Confirmar Eliminación
+                    </h4>
+                </div>
+                <div class="card-body text-center py-4">
+                    <div class="mb-4">
+                        <i class="fas fa-trash-alt fa-4x text-danger mb-3"></i>
+                        <h3 class="text-danger">¿Estás seguro?</h3>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <p class="mb-0">
+                            <strong>Estás a punto de eliminar el pedido <span class="badge bg-dark">#{{ pedido.id }}</span></strong>
+                        </p>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <div class="card-body text-start">
+                            <h6>Información del pedido:</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Cliente:</strong></td>
+                                    <td>{{ pedido.usuario.username }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Fecha:</strong></td>
+                                    <td>{{ pedido.fecha|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Estado:</strong></td>
+                                    <td>
+                                        {% if pedido.estado == 'Pendiente' %}
+                                        <span class="badge bg-warning">{{ pedido.estado }}</span>
+                                        {% elif pedido.estado == 'Entregado' %}
+                                        <span class="badge bg-success">{{ pedido.estado }}</span>
+                                        {% elif pedido.estado == 'Cancelado' %}
+                                        <span class="badge bg-danger">{{ pedido.estado }}</span>
+                                        {% else %}
+                                        <span class="badge bg-info">{{ pedido.estado }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Total:</strong></td>
+                                    <td class="fw-bold">${{ pedido.total|floatformat:2 }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle me-2"></i>
+                        <strong>¡Esta acción no se puede deshacer!</strong>
+                        <p class="mb-0 mt-2">Se eliminarán todos los items asociados a este pedido.</p>
+                    </div>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-center gap-3">
+                            <a href="{% url 'admin_pedidos' %}" class="btn btn-secondary btn-lg">
+                                <i class="fas fa-times me-2"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="fas fa-trash me-2"></i> Sí, Eliminar Pedido
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-muted text-center">
+                    <small>ID del pedido: #{{ pedido.id }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

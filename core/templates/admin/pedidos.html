@@ -1,0 +1,182 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Gestión de Pedidos{% endblock %}
+
+{% block content %}
+<div class="admin-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1><i class="fas fa-shopping-bag me-2"></i> Pedidos</h1>
+        <p class="mb-0 text-muted">Gestiona los pedidos realizados por los clientes</p>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-shopping-bag fa-2x text-primary"></i>
+            <div class="stat-number">{{ pedidos|length }}</div>
+            <div class="stat-label">Total Pedidos</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-clock fa-2x text-warning"></i>
+            <div class="stat-number">{{ pedidos_pendientes }}</div>
+            <div class="stat-label">Pendientes</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-check-circle fa-2x text-success"></i>
+            <div class="stat-number">{{ pedidos_entregados }}</div>
+            <div class="stat-label">Entregados</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card">
+            <i class="fas fa-dollar-sign fa-2x text-info"></i>
+            <div class="stat-number">${{ total_ventas|floatformat:2 }}</div>
+            <div class="stat-label">Ventas Totales</div>
+        </div>
+    </div>
+</div>
+
+<!-- Pedidos Table -->
+<div class="card admin-card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-list me-2"></i> Lista de Pedidos</h5>
+        <div class="d-flex">
+            <select class="form-select me-2" style="width: 180px;" id="filterStatus">
+                <option value="">Todos los estados</option>
+                {% for estado_valor, estado_nombre in estados %}
+                <option value="{{ estado_valor }}" {% if estado_actual == estado_valor %}selected{% endif %}>
+                    {{ estado_nombre }}
+                </option>
+                {% endfor %}
+            </select>
+            <input type="text" class="form-control" placeholder="Buscar..." style="width: 200px;" id="searchInput">
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-admin mb-0" id="pedidosTable">
+                <thead>
+                    <tr>
+                        <th width="80">ID</th>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th>Productos</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th width="100">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pedido in pedidos %}
+                    <tr>
+                        <td class="fw-bold">
+                            <span class="badge bg-dark">#{{ pedido.id }}</span>
+                        </td>
+                        <td>
+                            <strong>{{ pedido.usuario.username }}</strong>
+                            <br><small class="text-muted">{{ pedido.usuario.email }}</small>
+                        </td>
+                        <td>
+                            {{ pedido.fecha|date:"d/m/Y" }}
+                            <br><small class="text-muted">{{ pedido.fecha|date:"H:i" }}</small>
+                        </td>
+                        <td>
+                            <span class="badge bg-info">{{ pedido.items.count }} items</span>
+                            <br><small class="text-muted">{{ pedido.items.first.producto.nombre|truncatechars:30 }}</small>
+                        </td>
+                        <td>
+                            <span class="fw-bold text-primary">${{ pedido.total|floatformat:2 }}</span>
+                            {% if pedido.metodo_pago %}
+                            <br><small class="text-muted">{{ pedido.metodo_pago }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if pedido.estado == 'Pendiente' %}
+                            <span class="badge bg-warning">
+                                <i class="fas fa-clock me-1"></i> {{ pedido.estado }}
+                            </span>
+                            {% elif pedido.estado == 'Pagado' %}
+                            <span class="badge bg-info">
+                                <i class="fas fa-check me-1"></i> {{ pedido.estado }}
+                            </span>
+                            {% elif pedido.estado == 'Enviado' %}
+                            <span class="badge bg-primary">
+                                <i class="fas fa-shipping-fast me-1"></i> {{ pedido.estado }}
+                            </span>
+                            {% elif pedido.estado == 'Entregado' %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-box-open me-1"></i> {{ pedido.estado }}
+                            </span>
+                            {% elif pedido.estado == 'Cancelado' %}
+                            <span class="badge bg-danger">
+                                <i class="fas fa-times me-1"></i> {{ pedido.estado }}
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+    <div class="d-flex">
+        <a href="{% url 'admin_pedido_detalle' pedido.id %}" class="btn-action btn-edit me-2" title="Ver Detalles">
+            <i class="fas fa-eye"></i>
+        </a>
+        <!-- FORMULARIO CON POST (RECOMENDADO) -->
+        <form method="post" action="{% url 'admin_pedido_eliminar' pedido.id %}" 
+              onsubmit="return confirm('¿Estás seguro de eliminar el pedido #{{ pedido.id }}?');"
+              style="display: inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn-action btn-delete" title="Eliminar">
+                <i class="fas fa-trash"></i>
+            </button>
+        </form>
+    </div>
+</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5">
+                            <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No hay pedidos registrados</h5>
+                            <p class="text-muted">Los pedidos aparecerán aquí cuando los clientes realicen compras</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% if pedidos %}
+    <div class="card-footer">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="text-muted">
+                Mostrando {{ pedidos|length }} pedidos
+            </div>
+            <div class="text-muted">
+                <i class="fas fa-dollar-sign me-1"></i> Total: ${{ total_ventas|floatformat:2 }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+    document.getElementById('filterStatus').addEventListener('change', function() {
+        window.location.href = "{% url 'admin_pedidos' %}?estado=" + this.value;
+    });
+    
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const filter = this.value.toLowerCase();
+        const rows = document.querySelectorAll('#pedidosTable tbody tr');
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

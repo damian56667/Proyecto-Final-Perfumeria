@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Panel Administrativo{% endblock %} - Esencia Noble</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #8a6d3b; /* Oro/Dorado elegante */
+            --secondary-color: #2c1810; /* Marrón oscuro */
+            --light-color: #f8f5f0; /* Beige claro */
+            --accent-color: #c9a86a; /* Oro claro */
+            --danger-color: #d32f2f;
+            --success-color: #388e3c;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(180deg, var(--secondary-color) 0%, #1a0f0a 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 0;
+            box-shadow: 3px 0 15px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar-header {
+            background-color: rgba(0,0,0,0.3);
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 2px solid var(--accent-color);
+        }
+        
+        .brand-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        
+        .brand-logo:hover {
+            color: white;
+        }
+        
+        .nav-link {
+            color: #ddd;
+            padding: 15px 25px;
+            margin: 5px 10px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(201, 168, 106, 0.2);
+            color: var(--accent-color);
+            transform: translateX(5px);
+        }
+        
+        .nav-link i {
+            width: 25px;
+            text-align: center;
+            margin-right: 10px;
+        }
+        
+        /* Main content */
+        .main-content {
+            padding: 30px;
+        }
+        
+        .admin-header {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .admin-header h1 {
+            color: var(--secondary-color);
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        /* Cards */
+        .admin-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border: none;
+            margin-bottom: 25px;
+            transition: transform 0.3s;
+        }
+        
+        .admin-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            background-color: var(--light-color);
+            border-bottom: 2px solid var(--accent-color);
+            color: var(--secondary-color);
+            font-weight: 600;
+            padding: 18px 25px;
+            border-radius: 12px 12px 0 0 !important;
+        }
+        
+        /* Buttons */
+        .btn-gold {
+            background-color: var(--accent-color);
+            color: var(--secondary-color);
+            border: none;
+            font-weight: 600;
+            padding: 10px 25px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .btn-gold:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .btn-dark-custom {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 8px;
+        }
+        
+        /* Tables */
+        .table-admin {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .table-admin thead th {
+            background-color: var(--light-color);
+            color: var(--secondary-color);
+            font-weight: 600;
+            padding: 18px 15px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+        
+        .table-admin tbody tr {
+            transition: background-color 0.2s;
+        }
+        
+        .table-admin tbody tr:hover {
+            background-color: rgba(201, 168, 106, 0.1);
+        }
+        
+        .table-admin td {
+            padding: 16px 15px;
+            vertical-align: middle;
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* Badges */
+        .badge-admin {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        
+        .badge-stock {
+            background-color: #e7f4e4;
+            color: var(--success-color);
+        }
+        
+        .badge-stock-low {
+            background-color: #fff4e5;
+            color: #f57c00;
+        }
+        
+        .badge-stock-out {
+            background-color: #ffebee;
+            color: var(--danger-color);
+        }
+        
+        /* Product image */
+        .product-img-admin {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--light-color);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* Action buttons */
+        .btn-action {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 3px;
+            transition: all 0.2s;
+        }
+        
+        .btn-edit {
+            background-color: rgba(255, 193, 7, 0.1);
+            color: #ff9800;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+        
+        .btn-edit:hover {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .btn-delete {
+            background-color: rgba(211, 47, 47, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(211, 47, 47, 0.3);
+        }
+        
+        .btn-delete:hover {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        /* Stats cards */
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--accent-color);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Footer */
+        .admin-footer {
+            margin-top: 40px;
+            padding: 20px;
+            text-align: center;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 px-0 sidebar">
+                <div class="sidebar-header">
+                    <a href="{% url 'admin_productos' %}" class="brand-logo">
+                        <i class="fas fa-crown me-2"></i>Esencia Noble Admin
+                    </a>
+                    <p class="mt-2 mb-0 text-light" style="font-size: 0.9rem;">Panel Administrativo</p>
+                </div>
+                
+                <nav class="nav flex-column mt-4">
+                    <a class="nav-link {% if request.path == '/panel/productos/' %}active{% endif %}" href="{% url 'admin_productos' %}">
+                        <i class="fas fa-box"></i> Productos
+                    </a>
+                    <a class="nav-link {% if request.path == '/panel/marcas/' %}active{% endif %}" href="{% url 'admin_marcas' %}">
+                        <i class="fas fa-tag"></i> Marcas
+                    </a>
+                    <a class="nav-link {% if request.path == '/panel/categorias/' %}active{% endif %}" href="{% url 'admin_categorias' %}">
+                        <i class="fas fa-list"></i> Categorías
+                    </a>
+                    <a class="nav-link {% if request.path == '/panel/ofertas/' %}active{% endif %}" href="{% url 'admin_ofertas' %}">
+                        <i class="fas fa-percent"></i> Ofertas
+                    </a>
+                    <a class="nav-link {% if request.path == '/panel/pedidos/' %}active{% endif %}" href="{% url 'admin_pedidos' %}">
+                        <i class="fas fa-shopping-bag"></i> Pedidos
+                    </a>
+                    <a class="nav-link {% if request.path == '/panel/usuarios/' %}active{% endif %}" href="{% url 'admin_usuarios' %}">
+                        <i class="fas fa-users"></i> Usuarios
+                    </a>
+                    
+                    <hr class="mx-3 my-4 bg-light">
+                    
+                    <a class="nav-link" href="{% url 'inicio' %}" target="_blank">
+                        <i class="fas fa-external-link-alt"></i> Ver Tienda
+                    </a>
+                    <a class="nav-link text-warning" href="{% url 'logout' %}">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                    </a>
+                </nav>
+                
+                <div class="position-absolute bottom-0 start-0 w-100 p-3 text-center text-light" style="font-size: 0.8rem;">
+                    <p class="mb-0">© 2023 Esencia Noble</p>
+                    <p class="mb-0">Panel Administrativo</p>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 ms-auto main-content">
+                {% if messages %}
+                <div class="mb-4">
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                {% block content %}
+                <!-- Content will go here -->
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

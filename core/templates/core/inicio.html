@@ -1,0 +1,616 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Esencia Noble - Fragancias de Lujo{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Hero Section Mejorada */
+    .hero-section {
+        background: linear-gradient(135deg, rgba(28,28,28,0.9) 0%, rgba(28,28,28,0.8) 100%), 
+                    url('{% static "img/perfume-bg.jpg" %}') center/cover no-repeat;
+        min-height: 70vh;
+        border-radius: 20px;
+        margin: 20px;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-content {
+        padding: 60px;
+        max-width: 600px;
+    }
+    
+    .hero-title {
+        font-size: 3.2rem;
+        line-height: 1.1;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+    
+    .hero-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+    
+    /* Categories Cards */
+    .category-card {
+        background: white;
+        border-radius: 15px;
+        padding: 30px 20px;
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        height: 100%;
+    }
+    
+    .category-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--dorado);
+        box-shadow: 0 15px 30px rgba(184, 134, 11, 0.15);
+    }
+    
+    .category-icon {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, var(--rosa), #f8f0f0);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 2rem;
+        color: var(--dorado);
+    }
+    
+    /* Product Cards Mejoradas */
+    .product-card-home {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.4s ease;
+        border: 1px solid var(--gris);
+        height: 100%;
+    }
+    
+    .product-card-home:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+    }
+    
+    .product-img-home {
+        height: 220px;
+        width: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+    
+    .product-card-home:hover .product-img-home {
+        transform: scale(1.08);
+    }
+    
+    .product-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: var(--dorado);
+        color: var(--negro);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        z-index: 1;
+    }
+    
+    /* Ofertas Section */
+    .offers-section {
+        background: linear-gradient(135deg, var(--rosa) 0%, #f8f0f0 100%);
+        border-radius: 20px;
+        padding: 50px 20px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .offer-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        border: 3px solid var(--dorado);
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .offer-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #dc3545;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    /* Stats */
+    .stats-section {
+        background: var(--negro);
+        color: white;
+        border-radius: 20px;
+        padding: 40px;
+        margin: 50px 20px;
+    }
+    
+    .stat-item {
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--dorado);
+        margin-bottom: 5px;
+    }
+    
+    .stat-label {
+        font-size: 1rem;
+        color: rgba(255,255,255,0.8);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    
+    /* Marcas Section */
+    .brands-section {
+        padding: 50px 0;
+    }
+    
+    .brand-logo {
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .brand-logo:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-section {
+            min-height: 60vh;
+            margin: 10px;
+        }
+        
+        .hero-content {
+            padding: 30px;
+        }
+        
+        .hero-title {
+            font-size: 2.2rem;
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="hero-title text-white">
+                        Descubre tu <span class="text-gold">Esencia</span><br>Perfecta
+                    </h1>
+                    <p class="hero-subtitle text-white">
+                        Fragancias exclusivas de las mejores casas perfumeras del mundo. 
+                        Donde el lujo se encuentra con la esencia pura.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="{% url 'perfumes' %}" class="btn btn-gold btn-lg px-4 py-3">
+                            <i class="fas fa-shopping-bag me-2"></i> Explorar Colección
+                        </a>
+                        <a href="{% url 'ofertas' %}" class="btn btn-outline-light btn-lg px-4 py-3">
+                            <i class="fas fa-percent me-2"></i> Ver Ofertas
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Explora por Categoría</h2>
+            <p class="text-muted">Encuentra la fragancia perfecta para cada ocasión</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-female"></i>
+                    </div>
+                    <h4 class="mb-3">Para Ella</h4>
+                    <p class="text-muted mb-4">Fragancias delicadas, intensas y seductoras que realzan tu feminidad.</p>
+                    <a href="{% url 'perfumes' %}" class="btn btn-outline-gold">Explorar</a>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-male"></i>
+                    </div>
+                    <h4 class="mb-3">Para Él</h4>
+                    <p class="text-muted mb-4">Aromas vibrantes y masculinos que definen carácter y sofisticación.</p>
+                    <a href="{% url 'perfumes' %}" class="btn btn-outline-gold">Explorar</a>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h4 class="mb-3">Unisex</h4>
+                    <p class="text-muted mb-4">Fragancias contemporáneas que trascienden géneros y convenciones.</p>
+                    <a href="{% url 'perfumes' %}" class="btn btn-outline-gold">Explorar</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="section-title mb-2">Productos Destacados</h2>
+                <p class="text-muted">Las fragancias más populares de nuestra colección</p>
+            </div>
+            <a href="{% url 'perfumes' %}" class="btn btn-gold">Ver Todos</a>
+        </div>
+        
+        <div class="row">
+            {% for producto in productos %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="product-card-home position-relative">
+                    {% if producto.tiene_oferta_activa %}
+                    <div class="product-badge">
+                        -{{ producto.oferta_activa.descuento|floatformat:0 }}%
+                    </div>
+                    {% endif %}
+                    
+                    <div class="overflow-hidden" style="height: 220px;">
+                        {% if producto.imagen %}
+                        <img src="{{ producto.imagen.url }}" class="product-img-home" alt="{{ producto.nombre }}">
+                        {% else %}
+                        <div class="product-img-home bg-light d-flex align-items-center justify-content-center">
+                            <i class="fas fa-wine-bottle fa-4x text-muted"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="p-3">
+                        <h6 class="mb-2">{{ producto.nombre }}</h6>
+                        <p class="text-muted small mb-2">{{ producto.marca.nombre }}</p>
+                        
+                        <div class="mb-3">
+                            {% if producto.tiene_oferta_activa %}
+                                {% with precio_descuento=producto.precio_con_descuento %}
+                                    <div class="d-flex align-items-center">
+                                        <span class="text-decoration-line-through text-muted me-2">
+                                            ${{ producto.precio|floatformat:2 }}
+                                        </span>
+                                        <span class="h5 text-dark mb-0">${{ precio_descuento|floatformat:2 }}</span>
+                                    </div>
+                                {% endwith %}
+                            {% else %}
+                                <span class="h5 text-dark mb-0">${{ producto.precio|floatformat:2 }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge {% if producto.stock > 10 %}bg-success{% elif producto.stock > 0 %}bg-warning{% else %}bg-danger{% endif %}">
+                                {% if producto.stock > 10 %}Disponible{% elif producto.stock > 0 %}{{ producto.stock }} unidades{% else %}Agotado{% endif %}
+                            </span>
+                            <a href="{% url 'producto_detail' producto.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye me-1"></i> Ver
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center py-5">
+                <i class="fas fa-box-open fa-4x text-muted mb-3"></i>
+                <h4 class="text-muted">No hay productos disponibles</h4>
+                <p class="text-muted">Pronto tendremos nuevas fragancias</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-item">
+                    <div class="stat-number">{{ total_productos|default:"50" }}+</div>
+                    <div class="stat-label">Fragancias</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-item">
+                    <div class="stat-number">{{ total_marcas|default:"20" }}+</div>
+                    <div class="stat-label">Marcas Exclusivas</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-item">
+                    <div class="stat-number">{{ total_clientes|default:"1000" }}+</div>
+                    <div class="stat-label">Clientes Satisfechos</div>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Soporte</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Special Offers -->
+{% if ofertas %}
+<section class="offers-section my-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Ofertas Especiales</h2>
+            <p class="text-muted">Aprovecha nuestros descuentos exclusivos por tiempo limitado</p>
+        </div>
+        
+        <div class="row">
+            {% for oferta in ofertas %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="offer-card">
+                    <div class="offer-badge">
+                        Oferta
+                    </div>
+                    
+                    <div class="text-center mb-4">
+                        <div class="display-4 fw-bold text-danger">
+                            -{{ oferta.descuento|floatformat:0 }}%
+                        </div>
+                        <small class="text-muted">DESCUENTO</small>
+                    </div>
+                    
+                    <h4 class="text-center mb-3">{{ oferta.nombre }}</h4>
+                    <p class="text-muted text-center mb-4">{{ oferta.descripcion|truncatechars:100 }}</p>
+                    
+                    <div class="text-center mb-4">
+                        <small class="text-muted d-block">Válida del:</small>
+                        <div class="small">
+                            <strong>{{ oferta.fecha_inicio|date:"d M Y" }}</strong> al 
+                            <strong>{{ oferta.fecha_fin|date:"d M Y" }}</strong>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge bg-info">
+                                {{ oferta.productos.count }} productos
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'ofertas' %}" class="btn btn-gold w-100">
+                        <i class="fas fa-percent me-2"></i> Ver Oferta
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Productos con Oferta -->
+{% if productos_con_oferta %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="section-title mb-2">Productos en Oferta</h2>
+                <p class="text-muted">Aprovecha estos productos con descuento especial</p>
+            </div>
+            <a href="{% url 'ofertas' %}" class="btn btn-gold">
+                Ver Todas las Ofertas <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+        
+        <div class="row">
+            {% for producto in productos_con_oferta %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="product-card-home position-relative">
+                    <div class="product-badge">
+                        {% with oferta=producto.ofertas.first %}
+                            -{{ oferta.descuento|floatformat:0 }}%
+                        {% endwith %}
+                    </div>
+                    
+                    <div class="overflow-hidden" style="height: 220px;">
+                        {% if producto.imagen %}
+                        <img src="{{ producto.imagen.url }}" class="product-img-home" alt="{{ producto.nombre }}">
+                        {% else %}
+                        <div class="product-img-home bg-light d-flex align-items-center justify-content-center">
+                            <i class="fas fa-wine-bottle fa-4x text-muted"></i>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="p-3">
+                        <h6 class="mb-2">{{ producto.nombre }}</h6>
+                        <p class="text-muted small mb-2">{{ producto.marca.nombre }}</p>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="h6 text-dark mb-0">${{ producto.precio }}</span>
+                            <span class="badge bg-danger">
+                                ¡Oferta!
+                            </span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge {% if producto.stock > 10 %}bg-success{% elif producto.stock > 0 %}bg-warning{% else %}bg-danger{% endif %}">
+                                {{ producto.stock }} unidades
+                            </span>
+                            <a href="{% url 'producto_detail' producto.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye me-1"></i> Ver
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Brands Section -->
+<section class="brands-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Marcas Exclusivas</h2>
+            <p class="text-muted">Trabajamos con las mejores casas perfumeras del mundo</p>
+        </div>
+        
+        <div class="row">
+            {% for marca in marcas|slice:":6" %}
+            <div class="col-lg-2 col-md-4 col-6 mb-4">
+                <div class="brand-logo">
+                    {% if marca.imagen %}
+                    <img src="{{ marca.imagen.url }}" alt="{{ marca.nombre }}" class="img-fluid" style="max-height: 50px;">
+                    {% else %}
+                    <span class="fw-bold text-dark">{{ marca.nombre|truncatechars:12 }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center mt-4">
+            <a href="{% url 'marcas' %}" class="btn btn-outline-gold">
+                Ver Todas las Marcas <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="text-center p-4">
+                    <div class="category-icon mb-3 mx-auto">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h5 class="mb-3">Envío Rápido</h5>
+                    <p class="text-muted mb-0">Entrega en 24-48 horas en toda la república</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="text-center p-4">
+                    <div class="category-icon mb-3 mx-auto">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h5 class="mb-3">Productos Originales</h5>
+                    <p class="text-muted mb-0">Garantía de autenticidad en todas nuestras fragancias</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="text-center p-4">
+                    <div class="category-icon mb-3 mx-auto">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <h5 class="mb-3">Soporte 24/7</h5>
+                    <p class="text-muted mb-0">Asesoría personalizada en tu compra</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="text-center p-4">
+                    <div class="category-icon mb-3 mx-auto">
+                        <i class="fas fa-undo-alt"></i>
+                    </div>
+                    <h5 class="mb-3">Devoluciones</h5>
+                    <p class="text-muted mb-0">30 días para cambios o devoluciones</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Efecto de conteo para las estadísticas
+    document.addEventListener('DOMContentLoaded', function() {
+        const counters = document.querySelectorAll('.stat-number');
+        counters.forEach(counter => {
+            const target = parseInt(counter.textContent);
+            const increment = target / 100;
+            let current = 0;
+            
+            const updateCounter = () => {
+                if (current < target) {
+                    current += increment;
+                    counter.textContent = Math.ceil(current) + '+';
+                    setTimeout(updateCounter, 15);
+                } else {
+                    counter.textContent = target + '+';
+                }
+            };
+            
+            // Iniciar animación cuando el elemento sea visible
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        updateCounter();
+                        observer.unobserve(entry.target);
+                    }
+                });
+            });
+            
+            observer.observe(counter);
+        });
+    });
+</script>
+{% endblock %}

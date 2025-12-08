@@ -1,0 +1,352 @@
+<!-- core/templates/core/carrito.html -->
+{% extends "core/base.html" %}
+{% block title %}Carrito de Compras - Perfumería{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="mb-4">
+        <i class="fas fa-shopping-cart me-2"></i>
+        Mi Carrito
+    </h1>
+    
+    {% if carrito.items.count %}
+    <div class="row">
+        <!-- Lista de productos -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-boxes me-2"></i>
+                        Productos ({{ cantidad_items }} items)
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for item in carrito.items.all %}
+                    <div class="row mb-4 border-bottom pb-4">
+                        <div class="col-md-3">
+                            {% if item.producto.imagen %}
+                            <img src="{{ item.producto.imagen.url }}" alt="{{ item.producto.nombre }}" 
+                                 class="img-fluid rounded" style="max-height: 120px; object-fit: cover;">
+                            {% else %}
+                            <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                 style="height: 120px;">
+                                <i class="fas fa-perfume-bottle text-muted fa-2x"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-5">
+                            <h5>{{ item.producto.nombre }}</h5>
+                            <p class="text-muted small mb-2">{{ item.producto.descripcion|truncatechars:100 }}</p>
+                            
+                            {% if item.producto.tiene_descuento %}
+                            <div class="mb-2">
+                                <span class="badge bg-danger">¡OFERTA!</span>
+                                <small class="text-success fw-bold">
+                                    <i class="fas fa-tag me-1"></i>
+                                    Ahorras ${{ item.producto.precio|floatformat:2|add:"-"|add:item.producto.precio_con_descuento|floatformat:2 }} por unidad
+                                </small>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <form method="post" action="{% url 'cambiar_cantidad' item.id %}" class="d-flex align-items-center">
+                                    {% csrf_token %}
+                                    <input type="number" name="cantidad" value="{{ item.cantidad }}" 
+                                           min="1" max="99" class="form-control form-control-sm me-2" 
+                                           style="width: 80px;">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-sync-alt"></i>
+                                    </button>
+                                </form>
+                                <form method="post" action="{% url 'eliminar_carrito' item.id %}" class="ms-2">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <div class="text-end">
+                                <!-- Precios -->
+                                <div class="mb-2">
+                                    {% if item.producto.tiene_descuento %}
+                                    <div>
+                                        <small class="text-decoration-line-through text-muted">
+                                            Precio original: ${{ item.producto.precio|floatformat:2 }}
+                                        </small>
+                                        <h5 class="text-success mb-1">
+                                            Precio oferta: ${{ item.precio_unitario|floatformat:2 }}
+                                        </h5>
+                                    </div>
+                                    {% else %}
+                                    <h5 class="text-primary mb-1">
+                                        Precio: ${{ item.precio_unitario|floatformat:2 }}
+                                    </h5>
+                                    {% endif %}
+                                </div>
+                                
+                                <!-- Subtotal -->
+                                <div class="mt-2 border-top pt-2">
+                                    <h6 class="text-dark mb-1">
+                                        Subtotal: ${{ item.subtotal|floatformat:2 }}
+                                    </h6>
+                                    <small class="text-muted">
+                                        ${{ item.precio_unitario|floatformat:2 }} × {{ item.cantidad }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'perfumes' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i> Seguir Comprando
+                        </a>
+                        <a href="{% url 'reparar_precios' %}" class="btn btn-outline-warning">
+                            <i class="fas fa-tools me-2"></i> Reparar Precios
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resumen del pedido CON DESGLOSE COMPLETO -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-file-invoice-dollar me-2"></i>
+                        Resumen del Pedido
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Precio original (solo si hay descuentos) -->
+                    {% if descuento_total > 0 %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Precio original:</span>
+                            <span class="text-decoration-line-through text-muted">
+                                ${{ subtotal_original|floatformat:2 }}
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center text-success">
+                            <span>
+                                <i class="fas fa-tag me-1"></i>
+                                Descuento aplicado:
+                            </span>
+                            <span class="fw-bold">- ${{ descuento_total|floatformat:2 }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Subtotal después de descuentos -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold">Subtotal:</span>
+                        <span class="fw-bold">${{ subtotal_con_descuento|floatformat:2 }}</span>
+                    </div>
+                    
+                    <!-- Impuesto (IVA) -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">
+                            Impuesto (IVA {{ impuesto_porcentaje|floatformat:0 }}%):
+                        </span>
+                        <span class="text-muted">+ ${{ impuesto|floatformat:2 }}</span>
+                    </div>
+                    
+                    <!-- Envío -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted">Costo de envío:</span>
+                        {% if envio == 0 %}
+                        <span class="text-success fw-bold">
+                            <i class="fas fa-check-circle me-1"></i>GRATIS
+                        </span>
+                        {% else %}
+                        <span class="text-muted">+ ${{ envio|floatformat:2 }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Mensaje de envío gratis -->
+                    {% if not calcular_envio_gratis %}
+                    <div class="alert alert-warning small mb-3">
+                        <i class="fas fa-truck me-2"></i>
+                        <strong>¡Faltan ${{ faltante_envio_gratis|floatformat:2 }} para envío gratis!</strong>
+                        Agrega más productos y obtén envío gratuito en pedidos mayores a $500.
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success small mb-3">
+                        <i class="fas fa-gift me-2"></i>
+                        <strong>¡Felicidades!</strong> Obtienes envío gratuito en este pedido.
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Línea divisora -->
+                    <hr class="my-3">
+                    
+                    <!-- TOTAL FINAL -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="mb-0">Total a pagar:</h4>
+                        <h2 class="text-primary mb-0">${{ total|floatformat:2 }}</h2>
+                    </div>
+                    
+                    <!-- Desglose resumido -->
+                    <div class="alert alert-light small border">
+                        <h6 class="mb-2">
+                            <i class="fas fa-calculator me-2"></i>
+                            Desglose del total:
+                        </h6>
+                        <table class="table table-sm table-borderless mb-0">
+                            <tr>
+                                <td>Subtotal productos:</td>
+                                <td class="text-end">${{ subtotal_con_descuento|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <td>+ IVA {{ impuesto_porcentaje|floatformat:0 }}%:</td>
+                                <td class="text-end">+ ${{ impuesto|floatformat:2 }}</td>
+                            </tr>
+                            <tr>
+                                <td>+ Envío:</td>
+                                <td class="text-end">
+                                    {% if envio == 0 %}
+                                    $0.00
+                                    {% else %}
+                                    + ${{ envio|floatformat:2 }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr class="border-top">
+                                <td><strong>TOTAL:</strong></td>
+                                <td class="text-end">
+                                    <strong>${{ total|floatformat:2 }}</strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <!-- Botón de checkout -->
+                    <div class="d-grid gap-2 mt-4">
+                        <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-lock me-2"></i>
+                            Proceder al Pago
+                        </a>
+                        
+                        <div class="text-center mt-2">
+                            <small class="text-muted">
+                                <i class="fas fa-shield-alt me-1"></i>
+                                Pago 100% seguro - Esta es una simulación
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Promoción adicional -->
+            <div class="card mt-3 border-success">
+                <div class="card-body">
+                    <h6 class="text-success">
+                        <i class="fas fa-percentage me-2"></i>
+                        ¡Oferta Especial!
+                    </h6>
+                    <p class="small mb-2">
+                        Compra 3 productos o más y obtén un <strong>10% de descuento adicional</strong>.
+                    </p>
+                    
+                    {% if cantidad_items >= 3 %}
+                    <div class="alert alert-success small mb-2">
+                        <i class="fas fa-check-circle me-2"></i>
+                        ¡Ya calificas para el 10% extra! El descuento se aplicará en checkout.
+                    </div>
+                    {% else %}
+                    <small class="text-muted">
+    {% if productos_faltantes > 0 %}
+    Te faltan {{ productos_faltantes }} productos para obtener el 10% extra.
+    {% else %}
+    ¡Ya calificas para el 10% extra!
+    {% endif %}
+</small>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Carrito vacío -->
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-shopping-cart fa-4x text-muted mb-4"></i>
+            <h3 class="text-muted mb-3">Tu carrito está vacío</h3>
+            <p class="text-muted mb-4">
+                Parece que aún no has agregado productos a tu carrito.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{% url 'perfumes' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-store me-2"></i>
+                    Ver Productos
+                </a>
+                <a href="#" class="btn btn-outline-danger">
+                    <i class="fas fa-fire me-2"></i>
+                    Ver Ofertas
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Estilos -->
+<style>
+.sticky-top {
+    position: -webkit-sticky;
+    position: sticky;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #6f42c1 0%, #8844ff 100%);
+    border: none;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #5a32a3 0%, #7333e0 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(111, 66, 193, 0.3);
+    transition: all 0.3s;
+}
+
+.card {
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+}
+
+.text-primary {
+    color: #6f42c1 !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.alert-light {
+    background-color: #f8f9fa;
+}
+
+/* Animación para el total */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.text-primary:hover {
+    animation: pulse 2s infinite;
+}
+</style>
+
+<!-- Custom template filter (opcional, si quieres restar) -->
+{% comment %}
+<!-- Si no tienes este filter, puedes instalar django-mathfilters o hacerlo en la view -->
+{% load mathfilters %}
+{% endcomment %}
+{% endblock %}

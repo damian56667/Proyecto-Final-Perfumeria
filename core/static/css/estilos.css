@@ -1,0 +1,251 @@
+/* ===========================
+   PALETA / VARIABLES
+=========================== */
+:root{
+    --dorado: #B8860B;
+    --negro: #1C1C1C;
+    --blanco: #F5F5F5;
+    --rosa: #F2D7D5;
+    --gris: #e9e9e9;
+    --text-muted: #666;
+  }
+  
+  /* ===========================
+     RESET / GENERALES
+  =========================== */
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: "Poppins", Arial, sans-serif;
+    background:var(--blanco);
+    color:var(--negro);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+  
+  a{ color:var(--negro); text-decoration:none; transition:color .18s ease;}
+  a:hover{ color:var(--dorado); }
+  
+  .contenedor{
+    max-width:1100px;
+    margin:24px auto;
+    padding:0 18px;
+  }
+  
+  /* ===========================
+     HEADER
+  =========================== */
+  header{
+    background:var(--blanco);
+    border-bottom:3px solid var(--dorado);
+    padding:14px 18px;
+    position:relative;
+  }
+  
+  .logo-link{
+    color:var(--dorado);
+    font-size:28px;
+    font-weight:700;
+    text-decoration:none;
+  }
+  
+  /* derecha (carrito / usuario) */
+  .header-actions{
+    position:absolute;
+    right:18px;
+    top:14px;
+    display:flex;
+    gap:12px;
+    align-items:center;
+  }
+  
+  /* botones pequeños */
+  .header-actions .small-btn{
+    background:var(--negro);
+    color:var(--dorado);
+    padding:8px 10px;
+    border-radius:8px;
+    font-weight:600;
+  }
+  .header-actions .small-btn:hover{ background:var(--dorado); color:var(--negro); }
+  
+  /* ===========================
+     NAV
+  =========================== */
+  nav{
+    background:var(--negro);
+    padding:10px 0;
+    box-shadow:0 2px 6px rgba(0,0,0,0.06);
+  }
+  
+  nav .nav-inner{
+    max-width:1100px;
+    margin:0 auto;
+    padding:0 18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  
+  nav a{
+    color:var(--blanco);
+    font-weight:600;
+    padding:6px 10px;
+    border-radius:6px;
+  }
+  nav a:hover{ color:var(--dorado); background: rgba(255,255,255,0.02); }
+  
+  /* ===========================
+     HERO / CATEGORIAS
+  =========================== */
+  .hero{
+    background:var(--rosa);
+    padding:48px 18px;
+    border-radius:10px;
+    text-align:center;
+    margin-bottom:20px;
+  }
+  
+  .tarjeta-categoria{
+    display:inline-block;
+    width:260px;
+    min-height:110px;
+    background:#fff;
+    border-radius:12px;
+    padding:18px;
+    margin:12px;
+    text-align:center;
+    box-shadow:0 6px 18px rgba(0,0,0,0.06);
+  }
+  
+  /* ===========================
+     GRID PRODUCTOS (usa tus clases)
+     Asegúrate que tus templates envuelvan
+     los productos en un contenedor con clase .productos-grid
+     o usa directamente el selector a continuación
+  =========================== */
+  .productos-grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px;
+    justify-content:center;
+    margin-top:18px;
+  }
+  
+  /* tu clase actual en los html: .producto-lista */
+  .producto-lista{
+    background:white;
+    border-radius:12px;
+    padding:14px;
+    width:260px;            /* ancho card */
+    box-shadow:0 6px 14px rgba(0,0,0,0.06);
+    text-align:center;
+    transition:transform .16s ease, box-shadow .16s ease;
+  }
+  
+  .producto-lista:hover{
+    transform:translateY(-6px);
+    box-shadow:0 12px 28px rgba(0,0,0,0.12);
+  }
+  
+  .producto-lista img{
+    width:100%;
+    height:160px;
+    object-fit:cover;
+    border-radius:8px;
+    margin-bottom:10px;
+  }
+  
+  /* descripciones */
+  .producto-lista h3{ margin:8px 0; font-size:1.05rem; }
+  .producto-lista p{ color:var(--text-muted); font-size:.95rem; }
+  
+  /* precio y botones */
+  .producto-lista .precio{ font-weight:700; margin:8px 0; color:var(--negro); }
+  .producto-lista .acciones{ display:flex; gap:8px; justify-content:center; margin-top:8px; }
+  
+  .boton, .btn{
+    background:var(--dorado);
+    color:var(--negro);
+    padding:10px 14px;
+    border-radius:10px;
+    font-weight:700;
+    border:none;
+    cursor:pointer;
+  }
+  .boton:hover{ background:#d4a742; }
+  
+  /* ===========================
+     TABLAS / CARRITO
+  =========================== */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:18px;
+    background:white;
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:0 6px 14px rgba(0,0,0,0.06);
+  }
+  
+  thead th{
+    background:var(--negro);
+    color:var(--dorado);
+    padding:12px;
+    text-align:left;
+  }
+  
+  tbody td{
+    padding:12px;
+    border-bottom:1px solid #f0f0f0;
+    vertical-align:middle;
+  }
+  
+  /* pequeño botón eliminar */
+  .link-danger{
+    color:#b30000;
+    font-weight:700;
+  }
+  
+  /* totales */
+  .cart-summary{ text-align:right; margin-top:12px; font-weight:700; }
+  
+  /* ===========================
+     FORMULARIOS
+  =========================== */
+  form input, form select, form textarea{
+    width:100%;
+    padding:10px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    margin-bottom:10px;
+    font-size:1rem;
+  }
+  
+  /* ===========================
+     FOOTER
+  =========================== */
+  footer{
+    background:var(--negro);
+    color:var(--blanco);
+    padding:18px;
+    text-align:center;
+    margin-top:28px;
+  }
+  
+  /* ===========================
+     RESPONSIVE
+  =========================== */
+  @media (max-width:900px){
+    .producto-lista{ width:45%; }
+  }
+  
+  @media (max-width:600px){
+    .producto-lista{ width:100%; }
+    .logo-link{ font-size:20px; }
+    .header-actions{ position:static; justify-content:flex-end; margin-top:8px; }
+    nav .nav-inner{ justify-content:flex-start; gap:10px; }
+  }
+  
