@@ -27,14 +27,6 @@ class PerfilUsuario(models.Model):
     creado = models.DateTimeField(auto_now_add=True)
     actualizado = models.DateTimeField(auto_now=True)
 
-    @receiver(post_save, sender=User)
-    def crear_perfil_usuario(sender, instance, created, **kwargs):
-        if created:
-            PerfilUsuario.objects.create(usuario=instance)
-
-    @receiver(post_save, sender=User)
-    def guardar_perfil_usuario(sender, instance, **kwargs):
-            instance.perfil.save()
     
     def __str__(self):
         return f"Perfil de {self.usuario.username}"
